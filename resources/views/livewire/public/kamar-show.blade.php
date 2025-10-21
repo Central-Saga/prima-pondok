@@ -8,6 +8,7 @@ use Livewire\Attributes\Layout;
 
 new #[Layout('components.layouts.public')] class extends Component {
     public Kamar $kamar;
+    public int $activeIndex = 0;
 
     public ?string $tanggal_checkin = null;
     public ?string $tanggal_checkout = null;
@@ -18,6 +19,7 @@ new #[Layout('components.layouts.public')] class extends Component {
     public function mount(Kamar $kamar): void
     {
         $this->kamar = $kamar->load('fotos');
+        $this->activeIndex = 0;
     }
 
     public function updated($field): void
@@ -104,6 +106,14 @@ new #[Layout('components.layouts.public')] class extends Component {
 
         $this->redirectRoute('booking.show', $p->id);
     }
+
+    public function select(int $index): void
+    {
+        $count = $this->kamar->fotos?->count() ?? 0;
+        if ($index >= 0 && $index < $count) {
+            $this->activeIndex = $index;
+        }
+    }
 }; ?>
 
 <section class="py-12 sm:py-16 bg-white">
@@ -111,18 +121,20 @@ new #[Layout('components.layouts.public')] class extends Component {
         <div class="grid grid-cols-1 gap-8">
             <div>
                 <div class="aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden border bg-slate-100">
-                    @if(($kamar->fotos ?? collect())->isNotEmpty())
-                        <img src="{{ url('media/'.$kamar->fotos->first()->path) }}" alt="{{ $kamar->nama_kamar }}" class="h-full w-full object-cover" />
+                    @php($fotoCount = ($kamar->fotos ?? collect())->count())
+                    @if($fotoCount > 0)
+                        @php($main = $kamar->fotos[$activeIndex] ?? $kamar->fotos->first())
+                        <img src="{{ url('media/'.$main->path) }}" alt="{{ $kamar->nama_kamar }}" class="h-full w-full object-cover" />
                     @else
                         <div class="h-full w-full flex items-center justify-center text-slate-400">Tidak ada foto</div>
                     @endif
                 </div>
-                @if(($kamar->fotos ?? collect())->count() > 1)
+                @if(($kamar->fotos ?? collect())->isNotEmpty())
                     <div class="mt-3 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                        @foreach($kamar->fotos->skip(1) as $f)
-                            <div class="aspect-[4/3] rounded-lg overflow-hidden border bg-slate-100">
-                                <img src="{{ url('media/'.$f->path) }}" alt="Foto {{ $loop->iteration }}" class="h-full w-full object-cover" />
-                            </div>
+                        @foreach($kamar->fotos as $i => $f)
+                            <button type="button" wire:click="select({{ $i }})" class="group aspect-[4/3] rounded-lg overflow-hidden border bg-slate-100 ring-2 transition focus:outline-none {{ $activeIndex === $i ? 'ring-sky-400' : 'ring-transparent hover:ring-slate-300' }}">
+                                <img src="{{ url('media/'.$f->path) }}" alt="Foto {{ $i+1 }}" class="h-full w-full object-cover" />
+                            </button>
                         @endforeach
                     </div>
                 @endif
