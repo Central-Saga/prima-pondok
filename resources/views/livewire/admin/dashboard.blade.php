@@ -305,7 +305,9 @@ new class extends Component {
             const ctxB = document.getElementById('chartBookings');
             const ctxS = document.getElementById('chartStatus');
             const ctxR = document.getElementById('chartRevenue');
-            if (!window.Chart || !ctxB || !ctxS || !ctxR) return;
+            // Pastikan kanvas sudah terpasang dan punya ukuran > 0
+            const readyCanvases = [ctxB, ctxS, ctxR].every(el => el && el.isConnected && (el.offsetWidth > 0 || el.width > 0));
+            if (!window.Chart || !readyCanvases) return;
 
             window.__chartB = new Chart(ctxB, {
                 type: 'line',
@@ -341,6 +343,24 @@ new class extends Component {
             // isConnected catches when Livewire re-renders and replaces canvases
             const ok = b && s && r && b.canvas?.isConnected && s.canvas?.isConnected && r.canvas?.isConnected;
             return !!ok;
+        }
+
+        // Coba inisialisasi berulang sampai Chart.js & kanvas siap (mengatasi kasus pertama kali login)
+        let __chartRetries = 0;
+        function trySetupCharts() {
+            if (chartsReady()) return;
+            const b = document.getElementById('chartBookings');
+            const s = document.getElementById('chartStatus');
+            const r = document.getElementById('chartRevenue');
+            const haveCanvas = [b,s,r].every(el => el && el.isConnected && (el.offsetWidth > 0 || el.width > 0));
+            if (window.Chart && haveCanvas) {
+                setupDashboardCharts();
+                return;
+            }
+            if (__chartRetries < 25) { // ~3-4 detik total
+                __chartRetries++;
+                setTimeout(trySetupCharts, 150);
+            }
         }
 
         function updateDashboardCharts(payload) {
@@ -384,15 +404,18 @@ new class extends Component {
         }
 
         // Initial setup after page resources load
-        window.addEventListener('load', () => {
-            setupDashboardCharts();
-        });
+        window.addEventListener('load', () => { trySetupCharts(); });
+
+        // Untuk navigasi Livewire (wire:navigate)
+        window.addEventListener('livewire:navigated', () => { __chartRetries = 0; trySetupCharts(); });
 
         // Listen to Livewire v3 browser event dispatched from PHP with $this->dispatch(...)
         window.addEventListener('dashboard-data-updated', (e) => {
             const d = e?.detail;
             const payload = Array.isArray(d) ? (d[0] || {}) : (d || {});
-            updateDashboardCharts(payload);
+            // pastikan grafik terbuat dulu
+            if (!chartsReady()) { __chartRetries = 0; trySetupCharts(); setTimeout(() => updateDashboardCharts(payload), 200); }
+            else { updateDashboardCharts(payload); }
         });
 
         // Ensure charts exist after any Livewire DOM morph/patch
@@ -400,19 +423,30 @@ new class extends Component {
             if (!window.Livewire || !Livewire.hook) return;
             // v3 morph hooks
             if (Livewire.hook('morph.updated')) {
-                Livewire.hook('morph.updated', () => { if (!chartsReady()) setupDashboardCharts(); });
-                Livewire.hook('morph.added', () => { if (!chartsReady()) setupDashboardCharts(); });
+                Livewire.hook('morph.updated', () => { if (!chartsReady()) trySetupCharts(); });
+                Livewire.hook('morph.added', () => { if (!chartsReady()) trySetupCharts(); });
             }
             // Back-compat fallback
-            Livewire.hook('message.processed', () => { if (!chartsReady()) setupDashboardCharts(); });
+            Livewire.hook('message.processed', () => { if (!chartsReady()) trySetupCharts(); });
         });
 
         // Safety net: watch the section for canvas replacements and re-init charts
         (function(){
             const target = document.currentScript?.closest('section') || document.body;
             if (!('MutationObserver' in window) || !target) return;
-            const obs = new MutationObserver(() => { if (!chartsReady()) setupDashboardCharts(); });
+            const obs = new MutationObserver(() => { if (!chartsReady()) trySetupCharts(); });
             obs.observe(target, { childList: true, subtree: true });
+        })();
+
+        // ResizeObserver untuk memastikan grafik merender ketika ukuran kontainer berubah dari 0
+        (function(){
+            if (!('ResizeObserver' in window)) return;
+            const el = document.getElementById('chartBookings')?.parentElement?.parentElement; // card besar
+            const ro = new ResizeObserver(() => {
+                if (chartsReady()) { window.__chartB.resize(); window.__chartR.resize(); }
+                else { trySetupCharts(); }
+            });
+            if (el) ro.observe(el);
         })();
     </script>
 </section>
