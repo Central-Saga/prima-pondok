@@ -74,7 +74,7 @@
     </section>
 
     <!-- Kamar -->
-    <section id="kamar" class="py-16 sm:py-24">
+    <section id="kamar" class="py-16 sm:py-24 scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between">
                 <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Kamar Tersedia</h2>
@@ -106,7 +106,7 @@
     </section>
 
     <!-- Fasilitas with icons -->
-    <section id="fasilitas" class="py-16 bg-slate-50">
+    <section id="fasilitas" class="py-16 bg-slate-50 scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Fasilitas</h2>
             <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
@@ -152,27 +152,31 @@
     </section>
 
     <!-- Galeri -->
-    <section id="galeri" class="py-16">
+    <section id="galeri" class="py-16 scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Galeri</h2>
-            <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                @forelse(($galeri ?? []) as $g)
-                    <div class="aspect-[4/3] overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition-transform duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer">
-                        @if(\Illuminate\Support\Str::startsWith($g->path, ['http://','https://']))
-                            <img src="{{ $g->path }}" alt="{{ $g->title }}" class="h-full w-full object-cover">
-                        @else
-                            <img src="{{ url('media/'.$g->path) }}" alt="{{ $g->title }}" class="h-full w-full object-cover">
-                        @endif
+            <div class="mt-8 columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
+                @forelse(($galeri ?? []) as $i => $g)
+                    @php($shapes = ['aspect-[4/3]','aspect-[1/1]','aspect-[3/4]','aspect-[16/9]','aspect-[4/5]','aspect-[5/4]','aspect-[3/2]','aspect-[2/3]'])
+                    @php($shape = $shapes[$i % count($shapes)])
+                    <div class="mb-4 break-inside-avoid">
+                        <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition-transform duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer {{ $shape }}">
+                            @if(\Illuminate\Support\Str::startsWith($g->path, ['http://','https://']))
+                                <img src="{{ $g->path }}" alt="{{ $g->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover">
+                            @else
+                                <img src="{{ url('media/'.$g->path) }}" alt="{{ $g->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover">
+                            @endif
+                        </div>
                     </div>
                 @empty
-                    <div class="col-span-full text-slate-600">Belum ada foto.</div>
+                    <div class="text-slate-600">Belum ada foto.</div>
                 @endforelse
             </div>
         </div>
     </section>
 
     <!-- Kontak / Lokasi -->
-    <section id="kontak" class="py-16 bg-slate-900 text-white">
+    <section id="kontak" class="py-16 bg-slate-900 text-white scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 sm:grid-cols-2">
             <div>
                 <h2 class="text-2xl sm:text-3xl font-semibold">Kontak</h2>
