@@ -13,13 +13,61 @@
 
     <!-- Hero -->
     <section class="relative isolate overflow-hidden bg-gradient-to-b from-sky-50 to-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-            <div class="max-w-2xl">
-                <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $hero_title ?? 'Home Stay Pondok Teges' }}</h1>
+        @php($heroImages = collect($galeri ?? [])->take(6))
+        <div id="heroCarousel" class="absolute inset-0">
+            @forelse($heroImages as $idx => $g)
+                @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : url('media/'.$g->path))
+                <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
+                    <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy">
+                </div>
+            @empty
+                <div class="absolute inset-0 bg-slate-100"></div>
+            @endforelse
+            <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-transparent pointer-events-none"></div>
+            <div class="absolute inset-0">
+                <div class="mx-auto max-w-7xl h-full px-4 sm:px-6 lg:px-8 relative">
+                    
+                    @if($heroImages->count() > 1)
+                    <div class="absolute bottom-6 inset-x-0 flex items-center justify-center gap-2 z-20">
+                        @foreach($heroImages as $i => $g)
+                            <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/70 ring-1 ring-black/10 data-[active=true]:bg-white data-[active=true]:w-6 transition-[width,background-color] duration-300" data-idx="{{ $i }}"></button>
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative">
+            <div class="grid gap-10 lg:grid-cols-2 items-center">
+                <div class="max-w-2xl relative z-10">
+                <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{{ $hero_title ?? 'Home Stay Pondok Teges' }}</h1>
                 <p class="mt-6 text-lg leading-8 text-slate-600">{{ $hero_subtitle ?? 'Rasakan kenyamanan menginap di kawasan Ubud.' }}</p>
                 <div class="mt-10 flex items-center gap-x-6">
                     <a href="#kamar" class="rounded-md bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-slate-700">Lihat Kamar</a>
                     <a href="#kontak" class="text-sm font-semibold leading-6 text-slate-900">Kontak Kami →</a>
+                </div>
+                @php($heroImages = collect($galeri ?? [])->take(6))
+                <div class="relative hidden" aria-hidden="true">
+                    <div id="heroCarouselHidden" class="absolute inset-0">
+                        @forelse($heroImages as $idx => $g)
+                            @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : url('media/'.$g->path))
+                            <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
+                                <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy">
+                            </div>
+                        @empty
+                            <div class="absolute inset-0 grid place-items-center text-slate-400">Tidak ada gambar</div>
+                        @endforelse
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-transparent pointer-events-none"></div>
+
+
+                        @if($heroImages->count() > 1)
+                        <div class="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2 z-20">
+                            @foreach($heroImages as $i => $g)
+                                <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/60 ring-1 ring-black/10 data-[active=true]:bg-white data-[active=true]:w-6 transition-[width,background-color] duration-300" data-idx="{{ $i }}"></button>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,5 +190,36 @@
     </section>
 
     @include('partials.site-footer')
+    <script>
+    // Simple hero carousel without external deps
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('heroCarousel');
+      if (!root) return;
+      const slides = Array.from(root.querySelectorAll(':scope > [data-slide]'));
+      if (slides.length === 0) return;
+      const prevBtn = root.querySelector(':scope > button:nth-of-type(1)');
+      const nextBtn = root.querySelector(':scope > button:nth-of-type(2)');
+      const dots = Array.from(root.querySelectorAll('[data-idx]'));
+      let i = 0, timer = null, hover = false;
+      const setActive = (idx) => {
+        i = (idx + slides.length) % slides.length;
+        slides.forEach((el, k) => {
+          if (k === i) { el.classList.remove('opacity-0','pointer-events-none'); el.classList.add('opacity-100'); }
+          else { el.classList.add('opacity-0','pointer-events-none'); el.classList.remove('opacity-100'); }
+        });
+        dots.forEach((d,k)=> d.setAttribute('data-active', String(k===i)) );
+      };
+      const next = () => setActive(i + 1);
+      const prev = () => setActive(i - 1);
+      const start = () => { if (timer) clearInterval(timer); timer = setInterval(()=>{ if(!hover) next(); }, 5000); };
+      prevBtn && prevBtn.addEventListener('click', prev);
+      nextBtn && nextBtn.addEventListener('click', next);
+      dots.forEach(btn => btn.addEventListener('click', () => setActive(parseInt(btn.dataset.idx))));
+      root.addEventListener('mouseenter', ()=>{ hover = true; });
+      root.addEventListener('mouseleave', ()=>{ hover = false; });
+      setActive(0);
+      start();
+    });
+    </script>
 </body>
 </html>
