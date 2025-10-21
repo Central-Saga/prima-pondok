@@ -221,5 +221,81 @@
       start();
     });
     </script>
+    <script>
+    // Lightweight Galeri Lightbox (no external libs)
+    document.addEventListener('DOMContentLoaded', () => {
+      const imgs = Array.from(document.querySelectorAll('#galeri img'));
+      if (imgs.length === 0) return;
+
+      const sources = imgs.map(img => img.getAttribute('src'));
+      let idx = 0;
+      let open = false;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[60] bg-black/90 opacity-0 pointer-events-none transition-opacity duration-200';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+
+      overlay.innerHTML = `
+        <div class="absolute inset-0 grid place-items-center p-4">
+          <img class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl" alt="Galeri" />
+          <button type="button" aria-label="Tutup" class="absolute top-4 right-4 rounded-full bg-white/90 hover:bg-white p-2 shadow">
+            <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.222 4.222a.75.75 0 011.06 0L10 8.94l4.718-4.718a.75.75 0 111.06 1.06L11.06 10l4.718 4.718a.75.75 0 11-1.06 1.06L10 11.06l-4.718 4.718a.75.75 0 11-1.06-1.06L8.94 10 4.222 5.282a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+          </button>
+          <button type="button" aria-label="Sebelumnya" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
+            <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.78 4.22a.75.75 0 010 1.06L8.06 10l4.72 4.72a.75.75 0 11-1.06 1.06l-5.25-5.25a.75.75 0 010-1.06l5.25-5.25a.75.75 0 011.06 0z" clip-rule="evenodd"/></svg>
+          </button>
+          <button type="button" aria-label="Berikutnya" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
+            <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.22 15.78a.75.75 0 010-1.06L11.94 10 7.22 5.28a.75.75 0 111.06-1.06l5.25 5.25a.75.75 0 010 1.06l-5.25 5.25a.75.75 0 01-1.06 0z" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      const imgEl = overlay.querySelector('img');
+      const btnClose = overlay.querySelector('button[aria-label="Tutup"]');
+      const btnPrev = overlay.querySelector('button[aria-label="Sebelumnya"]');
+      const btnNext = overlay.querySelector('button[aria-label="Berikutnya"]');
+
+      const setSrc = (i) => {
+        idx = (i + sources.length) % sources.length;
+        imgEl.src = sources[idx];
+      };
+
+      const show = (i) => {
+        open = true;
+        setSrc(i);
+        overlay.classList.remove('pointer-events-none','opacity-0');
+        overlay.classList.add('opacity-100');
+        document.documentElement.classList.add('overflow-hidden');
+      };
+      const hide = () => {
+        open = false;
+        overlay.classList.add('opacity-0');
+        overlay.classList.remove('opacity-100');
+        document.documentElement.classList.remove('overflow-hidden');
+        setTimeout(()=> overlay.classList.add('pointer-events-none'), 200);
+      };
+
+      imgs.forEach((im, i) => {
+        im.style.cursor = 'zoom-in';
+        im.addEventListener('click', () => show(i));
+      });
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hide();
+      });
+      btnClose.addEventListener('click', hide);
+      btnPrev.addEventListener('click', () => setSrc(idx - 1));
+      btnNext.addEventListener('click', () => setSrc(idx + 1));
+
+      window.addEventListener('keydown', (e) => {
+        if (!open) return;
+        if (e.key === 'Escape') hide();
+        else if (e.key === 'ArrowRight') setSrc(idx + 1);
+        else if (e.key === 'ArrowLeft') setSrc(idx - 1);
+      });
+    });
+    </script>
 </body>
 </html>
