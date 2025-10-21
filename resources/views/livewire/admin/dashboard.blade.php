@@ -8,7 +8,8 @@ use Livewire\Volt\Component;
 new class extends Component {
     public int $kamarCount = 0;
     public int $pemesananCount = 0;
-    public int $pembayaranPending = 0;
+    public int $pembayaranPending = 0; // kept for possible future use
+    public float $totalRevenue = 0.0;
 
     // Chart data (last 30 days)
     public array $labels = [];
@@ -21,6 +22,7 @@ new class extends Component {
         $this->kamarCount = Kamar::count();
         $this->pemesananCount = Pemesanan::count();
         $this->pembayaranPending = Pembayaran::where('status', 'pending')->count();
+        $this->totalRevenue = (float) Pembayaran::where('status','verified')->sum('jumlah');
 
         $from = now()->subDays(29)->startOfDay();
         $days = collect();
@@ -70,9 +72,9 @@ new class extends Component {
             <div class="text-sm/6 text-slate-600">Total Pemesanan</div>
             <div class="mt-2 text-4xl font-semibold text-slate-900">{{ $pemesananCount }}</div>
         </div>
-        <div class="rounded-2xl border border-amber-100 bg-amber-50 p-6 shadow-sm">
-            <div class="text-sm/6 text-amber-700">Pembayaran Pending</div>
-            <div class="mt-2 text-4xl font-semibold text-amber-800">{{ $pembayaranPending }}</div>
+        <div class="rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-white p-6 shadow-sm">
+            <div class="text-sm/6 opacity-90">Total Pendapatan</div>
+            <div class="mt-2 text-3xl sm:text-4xl font-semibold">Rp {{ number_format($totalRevenue,0,',','.') }}</div>
         </div>
     </div>
 
@@ -99,64 +101,45 @@ new class extends Component {
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
     <script>
-        const labels = @json($labels);
-        const bookings = @json($bookingsSeries);
-        const revenue = @json($revenueSeries);
-        const statusCounts = @json($statusCounts);
+        window.addEventListener('load', () => {
+            const labels = @json($labels);
+            const bookings = @json($bookingsSeries);
+            const revenue = @json($revenueSeries);
+            const statusCounts = @json($statusCounts);
 
-        const sky = {
-            50: '#f0f9ff', 100:'#e0f2fe', 200:'#bae6fd', 300:'#7dd3fc', 400:'#38bdf8', 500:'#0ea5e9', 600:'#0284c7', 700:'#0369a1', 800:'#075985', 900:'#0c4a6e'
-        };
-        const amber = { 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706' };
-        const rose = { 400:'#fb7185', 500:'#f43f5e', 600:'#e11d48' };
-        const slate = { 400:'#94a3b8', 600:'#475569'};
+            const sky = { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' };
+            const amber = { 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706' };
+            const rose = { 400:'#fb7185', 500:'#f43f5e', 600:'#e11d48' };
+            const slate = { 400:'#94a3b8', 600:'#475569'};
 
-        new Chart(document.getElementById('chartBookings'), {
-            type: 'line',
-            data: {
-                labels,
-                datasets: [{
-                    label: 'Booking',
-                    data: bookings,
-                    borderColor: sky[600],
-                    backgroundColor: sky[200],
-                    tension: .3,
-                    fill: true,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
-            }
-        });
+            const ctxB = document.getElementById('chartBookings');
+            const ctxS = document.getElementById('chartStatus');
+            const ctxR = document.getElementById('chartRevenue');
+            if (!window.Chart || !ctxB || !ctxS || !ctxR) return;
 
-        const statusLabels = Object.keys(statusCounts);
-        const statusData = Object.values(statusCounts);
-        const statusColors = [sky[500], amber[500], rose[500], slate[400]];
-        new Chart(document.getElementById('chartStatus'), {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{ data: statusData, backgroundColor: statusColors }]
-            },
-            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-        });
+            new Chart(ctxB, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{ label: 'Booking', data: bookings, borderColor: sky[600], backgroundColor: sky[200], tension: .3, fill: true, borderWidth: 2, pointRadius: 0 }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+            });
 
-        new Chart(document.getElementById('chartRevenue'), {
-            type: 'bar',
-            data: {
-                labels,
-                datasets: [{
-                    label: 'Pendapatan (Rp)',
-                    data: revenue,
-                    backgroundColor: sky[500],
-                    borderRadius: 6,
-                }]
-            },
-            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+            const statusLabels = Object.keys(statusCounts);
+            const statusData = Object.values(statusCounts);
+            const statusColors = [sky[500], amber[500], rose[500], slate[400]];
+            new Chart(ctxS, {
+                type: 'doughnut',
+                data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: statusColors }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            new Chart(ctxR, {
+                type: 'bar',
+                data: { labels, datasets: [{ label: 'Pendapatan (Rp)', data: revenue, backgroundColor: sky[500], borderRadius: 6 }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+            });
         });
     </script>
 </section>

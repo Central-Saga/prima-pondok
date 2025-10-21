@@ -19,7 +19,7 @@
                         <flux:navlist.item icon="photo" :href="route('admin.galeri.index')" :current="request()->routeIs('admin.galeri.*')" wire:navigate>Galeri</flux:navlist.item>
                         <flux:navlist.item icon="calendar-days" :href="route('admin.pemesanan.index')" :current="request()->routeIs('admin.pemesanan.*')" wire:navigate>Pemesanan</flux:navlist.item>
                         <flux:navlist.item icon="banknotes" :href="route('admin.pembayaran')" :current="request()->routeIs('admin.pembayaran')" wire:navigate>Pembayaran</flux:navlist.item>
-                        <flux:navlist.item icon="chart-bar" :href="route('admin.laporan')" :current="request()->routeIs('admin.laporan')" wire:navigate>Laporan</flux:navlist.item>
+                        
                         <flux:navlist.item icon="credit-card" :href="route('admin.bank.index')" :current="request()->routeIs('admin.bank.*')" wire:navigate>Bank</flux:navlist.item>
                         <flux:navlist.item icon="sparkles" :href="route('admin.landing.settings')" :current="request()->routeIs('admin.landing.settings')" wire:navigate>Konten Landing</flux:navlist.item>
                         <flux:navlist.item icon="users" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>Users & Roles</flux:navlist.item>
