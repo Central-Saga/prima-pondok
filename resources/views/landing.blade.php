@@ -57,17 +57,48 @@
         </div>
     </section>
 
-    <!-- Fasilitas simple highlight -->
+    <!-- Fasilitas with icons -->
     <section id="fasilitas" class="py-16 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Fasilitas</h2>
-            <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-sm text-slate-700">
-                <div class="rounded-lg border bg-white px-4 py-3">Wi‑Fi</div>
-                <div class="rounded-lg border bg-white px-4 py-3">Parkir</div>
-                <div class="rounded-lg border bg-white px-4 py-3">AC / Kipas</div>
-                <div class="rounded-lg border bg-white px-4 py-3">Air Panas</div>
-                <div class="rounded-lg border bg-white px-4 py-3">Sarapan (opsional)</div>
-                <div class="rounded-lg border bg-white px-4 py-3">Layanan Kebersihan</div>
+            <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
+                <div class="rounded-xl bg-sky-50 px-4 py-3 ring-1 ring-inset ring-sky-200 text-sky-700 flex items-center gap-3 hover:bg-sky-100 transition">
+                    <svg class="h-5 w-5 shrink-0 text-sky-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z"/>
+                    </svg>
+                    <span>Wi‑Fi</span>
+                </div>
+                <div class="rounded-xl bg-amber-50 px-4 py-3 ring-1 ring-inset ring-amber-200 text-amber-800 flex items-center gap-3 hover:bg-amber-100 transition">
+                    <svg class="h-5 w-5 shrink-0 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
+                    </svg>
+                    <span>Parkir</span>
+                </div>
+                <div class="rounded-xl bg-cyan-50 px-4 py-3 ring-1 ring-inset ring-cyan-200 text-cyan-800 flex items-center gap-3 hover:bg-cyan-100 transition">
+                    <svg class="h-5 w-5 shrink-0 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"/>
+                    </svg>
+                    <span>AC / Kipas</span>
+                </div>
+                <div class="rounded-xl bg-orange-50 px-4 py-3 ring-1 ring-inset ring-orange-200 text-orange-800 flex items-center gap-3 hover:bg-orange-100 transition">
+                    <svg class="h-5 w-5 shrink-0 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"/>
+                    </svg>
+                    <span>Air Panas</span>
+                </div>
+                <div class="rounded-xl bg-yellow-50 px-4 py-3 ring-1 ring-inset ring-yellow-200 text-yellow-800 flex items-center gap-3 hover:bg-yellow-100 transition">
+                    <svg class="h-5 w-5 shrink-0 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
+                    </svg>
+                    <span>Sarapan (opsional)</span>
+                </div>
+                <div class="rounded-xl bg-emerald-50 px-4 py-3 ring-1 ring-inset ring-emerald-200 text-emerald-800 flex items-center gap-3 hover:bg-emerald-100 transition">
+                    <svg class="h-5 w-5 shrink-0 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
+                    </svg>
+                    <span>Layanan Kebersihan</span>
+                </div>
             </div>
         </div>
     </section>
@@ -113,4 +144,3 @@
     @include('partials.site-footer')
 </body>
 </html>
-
