@@ -20,7 +20,8 @@ new class extends Component {
             'status' => 'required|string',
             'urutan' => 'required|integer|min:0',
             'url' => 'nullable|url',
-            'file' => 'nullable|file|image|max:4096',
+            // Naikkan batas ukuran ke 10MB (10240 KB)
+            'file' => 'nullable|file|image|max:10240',
         ]);
 
         $path = $this->file ? $this->file->store('galeri', 'public') : ($this->url ?? '');
