@@ -41,10 +41,13 @@
             <div class="grid gap-10 lg:grid-cols-2 items-center">
                 <div class="max-w-2xl relative z-10">
                 <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{{ $hero_title ?? 'Home Stay Pondok Teges' }}</h1>
-                <p class="mt-6 text-lg leading-8 text-slate-600">{{ $hero_subtitle ?? 'Rasakan kenyamanan menginap di kawasan Ubud.' }}</p>
-                <div class="mt-10 flex items-center gap-x-6">
+                <p class="mt-6 text-lg leading-8 text-white/90">{{ $hero_subtitle ?? 'Rasakan kenyamanan menginap di kawasan Ubud.' }}</p>
+                <div class="mt-10 flex items-center gap-x-3 sm:gap-x-4">
                     <a href="#kamar" class="rounded-md bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-slate-700">Lihat Kamar</a>
-                    <a href="#kontak" class="text-sm font-semibold leading-6 text-slate-900">Kontak Kami →</a>
+                    <a href="#kontak" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md shadow-sm transition-colors hover:bg-white/20 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                        Kontak Kami
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
+                    </a>
                 </div>
                 @php($heroImages = collect($galeri ?? [])->take(6))
                 <div class="relative hidden" aria-hidden="true">
@@ -180,11 +183,41 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 sm:grid-cols-2">
             <div>
                 <h2 class="text-2xl sm:text-3xl font-semibold">Kontak</h2>
-                <p class="mt-4 text-slate-200">{{ $contact_address ?? 'Ubud, Bali — Indonesia' }}</p>
-                <p class="mt-2 text-slate-200">Telepon/WA: {{ $contact_phone ?? '' }}</p>
-                <p class="mt-2 text-slate-200">Email: {{ $contact_email ?? '' }}</p>
+                <div class="mt-4 space-y-3 text-slate-200">
+                    <div class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+</svg>
+
+                        <span>{{ $contact_address ?? 'Ubud, Bali — Indonesia' }}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+</svg>
+
+                        <a href="tel:{{ preg_replace('/[^0-9+]/','', $contact_phone ?? '') }}" class="text-white underline underline-offset-2 decoration-white/30 hover:decoration-white">
+                            {{ $contact_phone ?? '' }}
+                        </a>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <svg class="h-5 w-5 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-6.75 4.05a2.25 2.25 0 0 1-2.31 0l-6.75-4.05a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                        </svg>
+                        <a href="mailto:{{ $contact_email ?? '' }}" class="text-white underline underline-offset-2 decoration-white/30 hover:decoration-white">
+                            {{ $contact_email ?? '' }}
+                        </a>
+                    </div>
+                </div>
                 <div class="mt-6">
-                    <a href="https://wa.me/{{ preg_replace('/\D/','',$contact_phone ?? '') }}" class="inline-flex items-center rounded-md bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20">Chat WhatsApp</a>
+                    <a href="https://wa.me/{{ preg_replace('/\D/','',$contact_phone ?? '') }}" class="inline-flex items-center gap-2 rounded-md bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+</svg>
+
+                        Chat WhatsApp
+                    </a>
                 </div>
             </div>
             <div class="rounded-xl overflow-hidden border border-white/10 bg-white/5 min-h-56 flex items-center justify-center">

@@ -279,6 +279,7 @@ new class extends Component {
             const sky = { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' };
             const amber = { 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706' };
             const rose = { 400:'#fb7185', 500:'#f43f5e', 600:'#e11d48' };
+            const emerald = { 400:'#34d399', 500:'#10b981', 600:'#059669' };
             const slate = { 400:'#94a3b8', 600:'#475569'};
 
             // Plugin to draw a center message when all dataset values are zero/empty
@@ -324,7 +325,21 @@ new class extends Component {
                 statusLabels = ['Tidak ada data'];
                 statusData = [0];
             }
-            const statusColors = [sky[500], amber[500], rose[500], slate[400]];
+            // Samakan warna chart dengan badge status pemesanan
+            const statusColorOf = (label) => {
+                const s = String(label || '').toLowerCase();
+                if (s === 'pending') return amber[500];
+                if (s === 'confirmed') return emerald[500];
+                if (s === 'cancelled' || s === 'canceled') return rose[500];
+                if (s === 'completed') return sky[500];
+                // fallback yang masih konsisten dengan komponen badge
+                if (s === 'verified' || s === 'available' || s === 'active' || s === 'wisatawan') return emerald[500];
+                if (s === 'rejected' || s === 'unavailable') return rose[500];
+                if (s === 'maintenance') return amber[500];
+                if (s === 'admin') return sky[500];
+                return slate[400];
+            };
+            const statusColors = statusLabels.map(l => statusColorOf(l));
             window.__chartS = new Chart(ctxS, {
                 type: 'doughnut',
                 data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: statusColors }] },
@@ -397,8 +412,21 @@ new class extends Component {
                 let sLabels = Object.keys(status || {});
                 let sData = Object.values(status || {});
                 if (sLabels.length === 0) { sLabels = ['Tidak ada data']; sData = [0]; }
+                const statusColorOf = (label) => {
+                    const s = String(label || '').toLowerCase();
+                    if (s === 'pending') return '#f59e0b'; // amber-500
+                    if (s === 'confirmed') return '#10b981'; // emerald-500
+                    if (s === 'cancelled' || s === 'canceled') return '#f43f5e'; // rose-500
+                    if (s === 'completed') return '#0ea5e9'; // sky-500
+                    if (s === 'verified' || s === 'available' || s === 'active' || s === 'wisatawan') return '#10b981';
+                    if (s === 'rejected' || s === 'unavailable') return '#f43f5e';
+                    if (s === 'maintenance') return '#f59e0b';
+                    if (s === 'admin') return '#0ea5e9';
+                    return '#94a3b8'; // slate-400
+                };
                 window.__chartS.data.labels = sLabels;
                 window.__chartS.data.datasets[0].data = sData;
+                window.__chartS.data.datasets[0].backgroundColor = sLabels.map(l => statusColorOf(l));
                 window.__chartS.update();
             }
         }
