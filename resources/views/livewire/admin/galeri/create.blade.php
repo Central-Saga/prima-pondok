@@ -3,6 +3,7 @@
 use App\Models\Galeri;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
+use App\Support\ImageUploader;
 
 new class extends Component {
     use WithFileUploads;
@@ -20,13 +21,19 @@ new class extends Component {
             'status' => 'required|string',
             'urutan' => 'required|integer|min:0',
             'url' => 'nullable|url',
-            // Naikkan batas ukuran ke 10MB (10240 KB)
-            'file' => 'nullable|file|image|max:10240',
+            // Naikkan batas ukuran ke 25MB (25600 KB)
+            'file' => 'nullable|file|image|max:25600',
         ]);
 
-        $path = $this->file ? $this->file->store('galeri', 'public') : ($this->url ?? '');
-        if ($path && !$this->url) {
-            $path = ltrim(str_replace('\\', '/', $path), '/');
+        if ($this->file) {
+            try {
+                $path = ImageUploader::storeCompressed($this->file, 'galeri', 2048, 1920, 1920);
+            } catch (\Throwable $e) {
+                $path = $this->file->store('galeri', 'public');
+                $path = $path ? ltrim(str_replace('\\', '/', $path), '/') : '';
+            }
+        } else {
+            $path = $this->url ?? '';
         }
 
         Galeri::create([
@@ -72,7 +79,7 @@ new class extends Component {
         </div>
         <div class="sm:col-span-2 flex items-center gap-3">
             <button class="ui-btn-primary">Simpan</button>
-            <a href="{{ route('admin.galeri.index') }}" class="text-sm text-slate-700 hover:text-slate-900">Batal</a>
+            <a href="{{ route('admin.galeri.index') }}" class="ui-btn-secondary">Batal</a>
         </div>
     </form>
 </section>

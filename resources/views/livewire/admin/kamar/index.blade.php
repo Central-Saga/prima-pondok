@@ -60,8 +60,8 @@ new class extends Component {
                         <td class="py-2 px-3">Rp {{ number_format($row->harga,0,',','.') }}</td>
                         <td class="py-2 px-3"><x-status-badge :status="$row->status" /></td>
                         <td class="py-2 px-3 text-right">
-                            <a href="{{ route('admin.kamar.edit', $row->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">Edit</a>
-                            <button onclick="if(!confirm('Hapus kamar ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $row->id }})" class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
+                            <a href="{{ route('admin.kamar.edit', $row->id) }}" class="ui-btn-secondary">Edit</a>
+                            <button onclick="if(!confirm('Hapus kamar ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $row->id }})" class="ml-2 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
                         </td>
                     </tr>
                 @endforeach

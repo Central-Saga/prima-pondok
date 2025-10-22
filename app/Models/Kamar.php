@@ -15,7 +15,7 @@ class Kamar extends Model
         'nama_kamar',
         'tipe_kamar',
         'harga',
-        'fasilitas',
+        'deskripsi',
         'status',
     ];
 

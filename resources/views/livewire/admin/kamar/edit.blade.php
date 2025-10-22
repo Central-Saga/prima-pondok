@@ -5,6 +5,7 @@ use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 use App\Models\KamarFoto;
 use Illuminate\Support\Facades\Storage;
+use App\Support\ImageUploader;
 
 new class extends Component {
     use WithFileUploads;
@@ -13,7 +14,7 @@ new class extends Component {
     public string $nama_kamar = '';
     public ?string $tipe_kamar = null;
     public float $harga = 0.0;
-    public ?string $fasilitas = null;
+    public ?string $deskripsi = null;
     public string $status = 'available';
     public array $images = [];
 
@@ -23,7 +24,7 @@ new class extends Component {
         $this->nama_kamar = $kamar->nama_kamar;
         $this->tipe_kamar = $kamar->tipe_kamar;
         $this->harga = (float) $kamar->harga;
-        $this->fasilitas = $kamar->fasilitas;
+        $this->deskripsi = $kamar->deskripsi;
         $this->status = $kamar->status;
     }
 
@@ -33,10 +34,10 @@ new class extends Component {
             'nama_kamar' => 'required|string|max:100',
             'tipe_kamar' => 'nullable|string|max:100',
             'harga' => 'required|numeric|min:0',
-            'fasilitas' => 'nullable|string',
+            'deskripsi' => 'nullable|string',
             'status' => 'required|string',
             'images' => 'array|max:10',
-            'images.*' => 'image|max:10240',
+            'images.*' => 'image|max:25600',
         ]);
 
         $images = $data['images'] ?? [];
@@ -47,9 +48,13 @@ new class extends Component {
         if (!empty($images)) {
             $orderStart = (int) ($this->kamar->fotos()->max('urutan') ?? 0);
             foreach ($images as $idx => $file) {
-                $path = $file->store('kamar', 'public');
+                try {
+                    $path = ImageUploader::storeCompressed($file, 'kamar', 2048, 1920, 1920);
+                } catch (\Throwable $e) {
+                    $path = $file->store('kamar', 'public');
+                    $path = $path ? ltrim(str_replace('\\\\', '/', $path), '/') : null;
+                }
                 if ($path) {
-                    $path = ltrim(str_replace('\\\\', '/', $path), '/');
                     KamarFoto::create([
                         'kamar_id' => $this->kamar->id,
                         'path' => $path,
@@ -111,8 +116,8 @@ new class extends Component {
             </select>
         </div>
         <div class="sm:col-span-2">
-            <label class="ui-label">Fasilitas</label>
-            <textarea wire:model="fasilitas" rows="3" class="ui-textarea"></textarea>
+            <label class="ui-label">Deskripsi Kamar</label>
+            <textarea wire:model="deskripsi" rows="3" class="ui-textarea"></textarea>
         </div>
         <div class="sm:col-span-2">
             <label class="ui-label">Foto Kamar (tambahkan atau hapus)</label>
@@ -124,7 +129,7 @@ new class extends Component {
                 @forelse($kamar->fotos as $f)
                     <div class="relative group">
                         <div class="aspect-[4/3] overflow-hidden rounded border bg-slate-100">
-                            <img src="{{ url('media/'.$f->path) }}" class="h-full w-full object-cover" />
+                            <img src="{{ asset('storage/'.ltrim($f->path,'/')) }}" class="h-full w-full object-cover" />
                         </div>
                         <button type="button" wire:click="deleteFoto({{ $f->id }})" class="absolute top-1 right-1 hidden group-hover:inline-flex items-center rounded-md px-2 py-1 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200 bg-white/90 hover:bg-rose-50">Hapus</button>
                     </div>
@@ -151,7 +156,7 @@ new class extends Component {
         </div>
         <div class="sm:col-span-2 flex items-center gap-3">
             <button class="ui-btn-primary">Update</button>
-            <a href="{{ route('admin.kamar.index') }}" class="text-sm text-slate-700 hover:text-slate-900">Batal</a>
+            <a href="{{ route('admin.kamar.index') }}" class="ui-btn-secondary">Batal</a>
         </div>
     </form>
 </section>

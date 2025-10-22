@@ -1,32 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Stay Pondok Teges</title>
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
-</head>
-<body class="antialiased bg-white text-slate-800">
-    <!-- Navbar -->
-    @include('partials.site-header')
+<x-layouts.public>
+    @php
+        $heroTitle = \App\Models\Setting::get('hero_title', 'Home Stay Pondok Teges');
+        $heroSubtitle = \App\Models\Setting::get('hero_subtitle', 'Rasakan kenyamanan menginap di kawasan Ubud.');
+    @endphp
 
     <!-- Hero -->
     <section class="relative isolate overflow-hidden bg-gradient-to-b from-sky-50 to-white">
         @php($heroImages = collect($galeri ?? [])->take(6))
         <div id="heroCarousel" class="absolute inset-0">
             @forelse($heroImages as $idx => $g)
-                @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : url('media/'.$g->path))
+                @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : asset('storage/'.$g->path))
                 <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
                     <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy">
                 </div>
             @empty
                 <div class="absolute inset-0 bg-slate-100"></div>
             @endforelse
-            <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-transparent pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none"></div>
             <div class="absolute inset-0">
                 <div class="mx-auto max-w-7xl h-full px-4 sm:px-6 lg:px-8 relative">
-                    
+                
                     @if($heroImages->count() > 1)
                     <div class="absolute bottom-6 inset-x-0 flex items-center justify-center gap-2 z-20">
                         @foreach($heroImages as $i => $g)
@@ -40,11 +33,11 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative">
             <div class="grid gap-10 lg:grid-cols-2 items-center">
                 <div class="max-w-2xl relative z-10">
-                <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{{ $hero_title ?? 'Home Stay Pondok Teges' }}</h1>
-                <p class="mt-6 text-lg leading-8 text-white/90">{{ $hero_subtitle ?? 'Rasakan kenyamanan menginap di kawasan Ubud.' }}</p>
+                <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{{ $heroTitle }}</h1>
+                <p class="mt-6 text-lg leading-8 text-white/90">{{ $heroSubtitle }}</p>
                 <div class="mt-10 flex items-center gap-x-3 sm:gap-x-4">
-                    <a href="#kamar" class="rounded-md bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-slate-700">Lihat Kamar</a>
-                    <a href="#kontak" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md shadow-sm transition-colors hover:bg-white/20 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                    <a href="#kamar" class="ui-btn-primary !bg-sky-600 hover:!bg-sky-500 ring-1 ring-white/20">Lihat Kamar</a>
+                    <a href="#kontak" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md shadow-sm transition-colors hover:bg-white/20 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
                         Kontak Kami
                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
                     </a>
@@ -53,14 +46,14 @@
                 <div class="relative hidden" aria-hidden="true">
                     <div id="heroCarouselHidden" class="absolute inset-0">
                         @forelse($heroImages as $idx => $g)
-                            @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : url('media/'.$g->path))
+                            @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : asset('storage/'.$g->path))
                             <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
                                 <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy">
                             </div>
                         @empty
                             <div class="absolute inset-0 grid place-items-center text-slate-400">Tidak ada gambar</div>
                         @endforelse
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-transparent pointer-events-none"></div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none"></div>
 
 
                         @if($heroImages->count() > 1)
@@ -77,27 +70,29 @@
     </section>
 
     <!-- Kamar -->
-    <section id="kamar" class="py-16 sm:py-24 scroll-mt-24">
+    <section id="kamar" class="py-16 sm:py-24 scroll-mt-24 bg-sky-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between">
                 <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Kamar Tersedia</h2>
             </div>
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse(($kamar ?? []) as $item)
-                    <div class="rounded-xl border bg-white shadow-sm overflow-hidden transform-gpu transition-transform duration-300 ease-out hover:scale-[1.02] hover:shadow-md">
+                    <div class="rounded-xl border border-sky-100 bg-white shadow-sm overflow-hidden transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md hover:border-sky-200">
                         @if(($item->fotos ?? collect())->isNotEmpty())
                             <div class="h-40 bg-slate-100">
-                                <img src="{{ url('media/'.$item->fotos->first()->path) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover">
+                                <img src="{{ asset('storage/'.$item->fotos->first()->path) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover">
                             </div>
                         @else
                             <div class="h-40 bg-slate-100 flex items-center justify-center text-slate-400">Foto</div>
                         @endif
                         <div class="p-4">
                             <h3 class="text-lg font-medium text-slate-900">{{ $item->nama_kamar }}</h3>
-                            <p class="mt-1 text-sm text-slate-600">{{ $item->tipe_kamar ?: 'Tipe Standar' }}</p>
+                            <div class="mt-2">
+                                <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">{{ $item->tipe_kamar ?: 'Tipe Standar' }}</span>
+                            </div>
                             <p class="mt-2 font-semibold text-slate-900">Rp {{ number_format($item->harga, 0, ',', '.') }}/malam</p>
                             <div class="mt-4">
-                                <a href="{{ route('kamar.show', $item->id) }}" class="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Pesan Sekarang</a>
+                                <a href="{{ route('kamar.show', $item->id) }}" class="ui-btn-primary">Pesan Sekarang</a>
                             </div>
                         </div>
                     </div>
@@ -109,7 +104,7 @@
     </section>
 
     <!-- Fasilitas with icons -->
-    <section id="fasilitas" class="py-16 bg-slate-50 scroll-mt-24">
+    <section id="fasilitas" class="py-16 bg-white scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Fasilitas</h2>
             <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
@@ -155,25 +150,28 @@
     </section>
 
     <!-- Galeri -->
-    <section id="galeri" class="py-16 scroll-mt-24">
+    <section id="galeri" class="py-16 scroll-mt-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Galeri</h2>
-            <div class="mt-8 columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
-                @forelse(($galeri ?? []) as $i => $g)
-                    @php($shapes = ['aspect-[4/3]','aspect-[1/1]','aspect-[3/4]','aspect-[16/9]','aspect-[4/5]','aspect-[5/4]','aspect-[3/2]','aspect-[2/3]'])
-                    @php($shape = $shapes[$i % count($shapes)])
-                    <div class="mb-4 break-inside-avoid">
-                        <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition-transform duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer {{ $shape }}">
-                            @if(\Illuminate\Support\Str::startsWith($g->path, ['http://','https://']))
-                                <img src="{{ $g->path }}" alt="{{ $g->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover">
-                            @else
-                                <img src="{{ url('media/'.$g->path) }}" alt="{{ $g->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover">
-                            @endif
+            <div class="mt-8 rounded-2xl bg-white ring-1 ring-slate-100 p-4 sm:p-5">
+                <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
+                    @forelse(($galeri ?? []) as $i => $g)
+                        @php($shapes = ['aspect-[4/3]','aspect-[1/1]','aspect-[3/4]','aspect-[16/9]','aspect-[4/5]','aspect-[5/4]','aspect-[3/2]','aspect-[2/3]'])
+                        @php($shape = $shapes[$i % count($shapes)])
+                        <div class="mb-4 break-inside-avoid">
+                            <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer {{ $shape }}">
+                                @if(\Illuminate\Support\Str::startsWith($g->path, ['http://','https://']))
+                                    <img src="{{ $g->path }}" alt="{{ $g->title }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+                                @else
+                                    <img src="{{ asset('storage/'.$g->path) }}" alt="{{ $g->title }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+                                @endif
+                                <div class="pointer-events-none absolute inset-0 bg-slate-900/0 transition-colors duration-200 group-hover:bg-slate-900/10"></div>
+                            </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="text-slate-600">Belum ada foto.</div>
-                @endforelse
+                    @empty
+                        <div class="text-slate-600">Belum ada foto.</div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </section>
@@ -226,7 +224,7 @@
         </div>
     </section>
 
-    @include('partials.site-footer')
+    
     <script>
     // Simple hero carousel without external deps
     document.addEventListener('DOMContentLoaded', () => {
@@ -334,5 +332,4 @@
       });
     });
     </script>
-</body>
-</html>
+</x-layouts.public>

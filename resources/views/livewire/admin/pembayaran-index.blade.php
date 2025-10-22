@@ -96,11 +96,11 @@ new class extends Component {
                         <td class="py-2 px-3"><x-status-badge :status="$pay->status" /></td>
                         <td class="py-2 px-3 text-right">
                             @if($pay->status === 'pending')
-                                <button wire:click="verify({{ $pay->id }})" class="inline-flex items-center rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-500 mr-2">Verify</button>
-                                <button wire:click="reject({{ $pay->id }})" class="inline-flex items-center rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-500">Reject</button>
+                                <button wire:click="verify({{ $pay->id }})" class="inline-flex items-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500 mr-2">Verify</button>
+                                <button wire:click="reject({{ $pay->id }})" class="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-500">Reject</button>
                             @else
-                                <a href="{{ route('admin.pembayaran.edit', $pay->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200 hover:bg-amber-50 mr-2">Edit</a>
-                                <button onclick="if(!confirm('Hapus pembayaran ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $pay->id }})" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
+                                <a href="{{ route('admin.pembayaran.edit', $pay->id) }}" class="ui-btn-secondary mr-2">Edit</a>
+                                <button onclick="if(!confirm('Hapus pembayaran ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $pay->id }})" class="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
                             @endif
                         </td>
                     </tr>

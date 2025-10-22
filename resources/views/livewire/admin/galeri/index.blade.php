@@ -55,15 +55,15 @@ new class extends Component {
                     @if(\Illuminate\Support\Str::startsWith($g->path, ['http://','https://']))
                         <img src="{{ $g->path }}" class="h-full w-full object-cover" />
                     @else
-                        <img src="{{ url('media/'.$g->path) }}" class="h-full w-full object-cover" />
+                        <img src="{{ asset('storage/'.ltrim($g->path,'/')) }}" class="h-full w-full object-cover" />
                     @endif
                 </div>
                 <div class="p-4 text-sm">
                     <div class="font-medium">{{ $g->title }}</div>
                     <div class="text-slate-600">#{{ $g->urutan }} — {{ $g->status }}</div>
                     <div class="mt-3">
-                        <a href="{{ route('admin.galeri.edit', $g->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">Edit</a>
-                        <button onclick="if(!confirm('Hapus gambar ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $g->id }})" class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
+                        <a href="{{ route('admin.galeri.edit', $g->id) }}" class="ui-btn-secondary">Edit</a>
+                        <button onclick="if(!confirm('Hapus gambar ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $g->id }})" class="ml-2 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
                     </div>
                 </div>
             </div>

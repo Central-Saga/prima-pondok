@@ -110,7 +110,7 @@ new class extends Component {
                     <option value="{{ $y }}">{{ $y }}</option>
                 @endforeach
             </select>
-            <a href="{{ route('admin.laporan.export', ['from' => \Carbon\Carbon::create($year,$month,1)->startOfMonth()->format('Y-m-d'), 'to' => \Carbon\Carbon::create($year,$month,1)->endOfMonth()->format('Y-m-d')]) }}" class="inline-flex items-center justify-center rounded-md h-9 px-4 text-sm font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50 whitespace-nowrap min-w-[120px]">Export CSV</a>
+            <a href="{{ route('admin.laporan.export', ['from' => \Carbon\Carbon::create($year,$month,1)->startOfMonth()->format('Y-m-d'), 'to' => \Carbon\Carbon::create($year,$month,1)->endOfMonth()->format('Y-m-d')]) }}" class="ui-btn-secondary whitespace-nowrap">Export CSV</a>
         </div>
     </div>
 

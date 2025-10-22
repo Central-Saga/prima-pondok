@@ -58,7 +58,7 @@ new class extends Component {
                             </div>
                         </td>
                         <td class="py-2 px-3 text-right">
-                            <a href="{{ route('admin.users.edit', $u->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">Edit</a>
+                            <a href="{{ route('admin.users.edit', $u->id) }}" class="ui-btn-secondary">Edit</a>
                         </td>
                     </tr>
                 @endforeach
