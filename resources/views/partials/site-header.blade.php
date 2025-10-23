@@ -7,7 +7,6 @@
         <nav class="flex items-center gap-4">
             @php($onHome = request()->routeIs('home'))
             <a href="{{ $onHome ? '#kamar' : route('home').'#kamar' }}" class="text-slate-600 hover:text-slate-900">Kamar</a>
-            <a href="{{ $onHome ? '#fasilitas' : route('home').'#fasilitas' }}" class="text-slate-600 hover:text-slate-900">Fasilitas</a>
             <a href="{{ $onHome ? '#galeri' : route('home').'#galeri' }}" class="text-slate-600 hover:text-slate-900">Galeri</a>
             <a href="{{ $onHome ? '#kontak' : route('home').'#kontak' }}" class="text-slate-600 hover:text-slate-900">Kontak</a>
             @auth
