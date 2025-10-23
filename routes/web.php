@@ -77,6 +77,10 @@ Volt::route('admin/pembayaran/{pembayaran}/edit', 'admin.pembayaran.edit')->midd
 Volt::route('admin/bank', 'admin.bank.index')->middleware(['auth', 'role:admin'])->name('admin.bank.index');
 Volt::route('admin/bank/create', 'admin.bank.create')->middleware(['auth', 'role:admin'])->name('admin.bank.create');
 Volt::route('admin/bank/{bank}/edit', 'admin.bank.edit')->middleware(['auth', 'role:admin'])->name('admin.bank.edit');
+// Admin - Fasilitas CRUD pages
+Volt::route('admin/fasilitas', 'admin.fasilitas.index')->middleware(['auth', 'role:admin'])->name('admin.fasilitas.index');
+Volt::route('admin/fasilitas/create', 'admin.fasilitas.create')->middleware(['auth', 'role:admin'])->name('admin.fasilitas.create');
+Volt::route('admin/fasilitas/{fasilitas}/edit', 'admin.fasilitas.edit')->middleware(['auth', 'role:admin'])->name('admin.fasilitas.edit');
 // Admin - Pemesanan pages
 Volt::route('admin/pemesanan', 'admin.pemesanan.index')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.index');
 Volt::route('admin/pemesanan/create', 'admin.pemesanan.create')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.create');
