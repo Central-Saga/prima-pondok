@@ -19,7 +19,7 @@ new #[Layout('components.layouts.public')] class extends Component {
 
     public function mount(Kamar $kamar): void
     {
-        $this->kamar = $kamar->load('fotos');
+        $this->kamar = $kamar->load(['fotos','fasilitas']);
         $this->activeIndex = 0;
     }
 
@@ -158,6 +158,19 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <span>Tipe: <span class="font-medium text-slate-900">{{ $kamar->tipe_kamar ?: 'Standar' }}</span></span>
                         <span class="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-200">Rp {{ number_format($kamar->harga,0,',','.') }} / malam</span>
                     </div>
+                    @php($colors = ['emerald','sky','amber','violet','rose','indigo'])
+                    @if(($kamar->fasilitas ?? collect())->isNotEmpty())
+                        <div class="mt-4">
+                            <h2 class="text-lg font-semibold text-slate-900">Fasilitas</h2>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                @foreach($kamar->fasilitas as $f)
+                                    @php($c = $colors[$loop->index % count($colors)])
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 ring-inset {{ 'bg-'.$c.'-50 text-'.$c.'-700 ring-'.$c.'-200' }}">{{ $f->nama }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     @if($kamar->deskripsi)
                         <div class="mt-4">
                             <h2 class="text-lg font-semibold text-slate-900">Deskripsi</h2>

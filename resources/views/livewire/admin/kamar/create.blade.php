@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Kamar;
+use App\Models\Fasilitas;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 use App\Models\KamarFoto;
@@ -15,6 +16,13 @@ new class extends Component {
     public string $status = 'available';
     public array $images = [];
     public array $newImages = [];
+    public array $fasilitasList = [];
+    public array $fasilitas_ids = [];
+
+    public function mount(): void
+    {
+        $this->fasilitasList = Fasilitas::orderBy('nama')->get()->toArray();
+    }
 
     public function save(): void
     {
@@ -27,12 +35,18 @@ new class extends Component {
             'images' => 'array|max:10',
             // Naikkan batas ukuran per file ke 25MB (25600 KB)
             'images.*' => 'image|max:25600',
+            'fasilitas_ids' => 'array',
+            'fasilitas_ids.*' => 'integer|exists:fasilitas,id',
         ]);
 
         $images = $data['images'] ?? [];
-        unset($data['images']);
+        unset($data['images'], $data['fasilitas_ids']);
 
         $kamar = Kamar::create($data);
+
+        if (!empty($this->fasilitas_ids)) {
+            $kamar->fasilitas()->sync($this->fasilitas_ids);
+        }
 
         if (!empty($images)) {
             $order = 0;
@@ -129,6 +143,18 @@ new class extends Component {
                     @endforeach
                 </div>
             @endif
+</div>
+        <div class="sm:col-span-2">
+            <label class="ui-label">Fasilitas</label>
+            <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                @foreach($fasilitasList as $f)
+                <label class="inline-flex items-center gap-2 text-sm">
+                    <input type="checkbox" value="{{ $f['id'] }}" wire:model="fasilitas_ids" class="ui-checkbox">
+                    <span>{{ $f['nama'] }}</span>
+                </label>
+                @endforeach
+            </div>
+            @error('fasilitas_ids') <div class="ui-error">{{ $message }}</div> @enderror
         </div>
         <div class="sm:col-span-2 flex items-center gap-3">
             <button class="ui-btn-primary">Simpan</button>

@@ -32,4 +32,9 @@ class Kamar extends Model
     {
         return $this->hasMany(KamarFoto::class)->orderBy('urutan')->orderBy('id');
     }
+
+    public function fasilitas()
+    {
+        return $this->belongsToMany(Fasilitas::class, 'fasilitas_kamar', 'kamar_id', 'fasilitas_id');
+    }
 }
