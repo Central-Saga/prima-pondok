@@ -20,9 +20,10 @@ new class extends Component {
             'title' => 'nullable|string|max:100',
             'status' => 'required|string',
             'urutan' => 'required|integer|min:0',
-            'url' => 'nullable|url',
+            // Salah satu wajib diisi: file atau url
+            'url' => 'nullable|url|required_without:file',
             // Naikkan batas ukuran ke 25MB (25600 KB)
-            'file' => 'nullable|file|image|max:25600',
+            'file' => 'nullable|file|image|max:25600|required_without:url',
         ]);
 
         if ($this->file) {

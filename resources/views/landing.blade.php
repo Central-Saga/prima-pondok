@@ -9,9 +9,11 @@
         @php($heroImages = collect($galeri ?? [])->take(6))
         <div id="heroCarousel" class="absolute inset-0">
             @forelse($heroImages as $idx => $g)
-                @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : asset('storage/'.$g->path))
+                @php($p = trim((string)($g->path ?? '')))
+                @continue($p === '')
+                @php($src = \Illuminate\Support\Str::startsWith($p, ['http://','https://']) ? $p : asset('storage/'.$p))
                 <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
-                    <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy">
+                    <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                 </div>
             @empty
                 <div class="absolute inset-0 bg-slate-100"></div>
@@ -23,6 +25,8 @@
                     @if($heroImages->count() > 1)
                     <div class="absolute bottom-6 inset-x-0 flex items-center justify-center gap-2 z-20">
                         @foreach($heroImages as $i => $g)
+                            @php($p = trim((string)($g->path ?? '')))
+                            @continue($p === '')
                             <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/70 ring-1 ring-black/10 data-[active=true]:bg-white data-[active=true]:w-6 transition-[width,background-color] duration-300" data-idx="{{ $i }}"></button>
                         @endforeach
                     </div>
@@ -46,9 +50,11 @@
                 <div class="relative hidden" aria-hidden="true">
                     <div id="heroCarouselHidden" class="absolute inset-0">
                         @forelse($heroImages as $idx => $g)
-                            @php($src = \Illuminate\Support\Str::startsWith($g->path, ['http://','https://']) ? $g->path : asset('storage/'.$g->path))
+                            @php($p = trim((string)($g->path ?? '')))
+                            @continue($p === '')
+                            @php($src = \Illuminate\Support\Str::startsWith($p, ['http://','https://']) ? $p : asset('storage/'.$p))
                             <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
-                                <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy">
+                                <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                             </div>
                         @empty
                             <div class="absolute inset-0 grid place-items-center text-slate-400">Tidak ada gambar</div>
@@ -59,6 +65,8 @@
                         @if($heroImages->count() > 1)
                         <div class="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2 z-20">
                             @foreach($heroImages as $i => $g)
+                                @php($p = trim((string)($g->path ?? '')))
+                                @continue($p === '')
                                 <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/60 ring-1 ring-black/10 data-[active=true]:bg-white data-[active=true]:w-6 transition-[width,background-color] duration-300" data-idx="{{ $i }}"></button>
                             @endforeach
                         </div>
@@ -80,7 +88,7 @@
                     <div class="rounded-xl border border-sky-100 bg-white shadow-sm overflow-hidden transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md hover:border-sky-200">
                         @if(($item->fotos ?? collect())->isNotEmpty())
                             <div class="h-40 bg-slate-100">
-                                <img src="{{ asset('storage/'.$item->fotos->first()->path) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover">
+                                <img src="{{ asset('storage/'.$item->fotos->first()->path) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                             </div>
                         @else
                             <div class="h-40 bg-slate-100 flex items-center justify-center text-slate-400">Foto</div>
@@ -187,13 +195,13 @@
                     @forelse(($galeri ?? []) as $i => $g)
                         @php($shapes = ['aspect-[4/3]','aspect-[1/1]','aspect-[3/4]','aspect-[16/9]','aspect-[4/5]','aspect-[5/4]','aspect-[3/2]','aspect-[2/3]'])
                         @php($shape = $shapes[$i % count($shapes)])
+                        @php($p = trim((string)($g->path ?? '')))
+                        @continue($p === '')
+                        @php($isExternal = \Illuminate\Support\Str::startsWith($p, ['http://','https://']))
                         <div class="mb-4 break-inside-avoid">
                             <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer {{ $shape }}">
-                                @if(\Illuminate\Support\Str::startsWith($g->path, ['http://','https://']))
-                                    <img src="{{ $g->path }}" alt="{{ $g->title }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
-                                @else
-                                    <img src="{{ asset('storage/'.$g->path) }}" alt="{{ $g->title }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover">
-                                @endif
+                                @php($src = $isExternal ? $p : asset('storage/'.$p))
+                                <img src="{{ $src }}" alt="{{ $g->title }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                                 <div class="pointer-events-none absolute inset-0 bg-slate-900/0 transition-colors duration-200 group-hover:bg-slate-900/10"></div>
                             </div>
                         </div>
