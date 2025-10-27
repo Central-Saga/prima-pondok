@@ -1,4 +1,4 @@
-<x-layouts.auth>
+<x-layouts.auth.split>
     <div class="flex flex-col gap-6">
         <div
             class="relative w-full h-auto"
@@ -25,18 +25,19 @@
         >
             <div x-show="!showRecoveryInput">
                 <x-auth-header
-                    :title="__('Authentication Code')"
-                    :description="__('Enter the authentication code provided by your authenticator application.')"
+                    :title="__('Kode autentikasi')"
+                    :description="__('Masukkan kode autentikasi dari aplikasi autentikator Anda.')"
                 />
             </div>
 
             <div x-show="showRecoveryInput">
                 <x-auth-header
-                    :title="__('Recovery Code')"
-                    :description="__('Please confirm access to your account by entering one of your emergency recovery codes.')"
+                    :title="__('Kode pemulihan')"
+                    :description="__('Konfirmasikan akses ke akun Anda dengan memasukkan salah satu kode pemulihan darurat.')"
                 />
             </div>
 
+            <div class="rounded-2xl border border-sky-100 bg-white px-6 py-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
             <form method="POST" action="{{ route('two-factor.login.store') }}">
                 @csrf
 
@@ -80,20 +81,20 @@
                     <flux:button
                         variant="primary"
                         type="submit"
-                        class="w-full"
+                        class="w-full bg-sky-600 hover:bg-sky-500 text-white"
                     >
-                        {{ __('Continue') }}
+                        {{ __('Lanjutkan') }}
                     </flux:button>
                 </div>
-
-                <div class="mt-5 space-x-0.5 text-sm leading-5 text-center">
-                    <span class="opacity-50">{{ __('or you can') }}</span>
-                    <div class="inline font-medium underline cursor-pointer opacity-80">
-                        <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('login using a recovery code') }}</span>
-                        <span x-show="showRecoveryInput" @click="toggleInput()">{{ __('login using an authentication code') }}</span>
+                <div class="mt-5 space-x-0.5 text-sm leading-5 text-center text-zinc-600 dark:text-zinc-400">
+                    <span class="opacity-80">{{ __('atau Anda bisa') }}</span>
+                    <div class="inline font-medium underline cursor-pointer">
+                        <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('masuk dengan kode pemulihan') }}</span>
+                        <span x-show="showRecoveryInput" @click="toggleInput()">{{ __('masuk dengan kode autentikasi') }}</span>
                     </div>
                 </div>
             </form>
+            </div>
         </div>
     </div>
-</x-layouts.auth>
+</x-layouts.auth.split>

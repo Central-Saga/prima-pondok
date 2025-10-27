@@ -15,7 +15,7 @@ class Kamar extends Model
         'nama_kamar',
         'tipe_kamar',
         'harga',
-        'fasilitas',
+        'deskripsi',
         'status',
     ];
 
@@ -31,5 +31,10 @@ class Kamar extends Model
     public function fotos()
     {
         return $this->hasMany(KamarFoto::class)->orderBy('urutan')->orderBy('id');
+    }
+
+    public function fasilitas()
+    {
+        return $this->belongsToMany(Fasilitas::class, 'fasilitas_kamar', 'kamar_id', 'fasilitas_id');
     }
 }

@@ -62,7 +62,7 @@ new #[Layout('components.layouts.public')] class extends Component {
 
         <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-4">
-                <div class="rounded-2xl border bg-white p-5 shadow-sm">
+                <div class="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
                     <div class="flex items-start justify-between">
                         <div>
                             <div class="text-sm text-slate-600">Kamar</div>
@@ -71,28 +71,30 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <x-status-badge :status="$pemesanan->status" />
                     </div>
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                        <div class="rounded-lg border p-3">
+                        <div class="rounded-lg border border-sky-100 bg-sky-50 p-3">
                             <div class="text-slate-600">Check-in</div>
                             <div class="font-medium text-slate-900">{{ $pemesanan->tanggal_checkin->format('d M Y') }}</div>
                         </div>
-                        <div class="rounded-lg border p-3">
+                        <div class="rounded-lg border border-sky-100 bg-sky-50 p-3">
                             <div class="text-slate-600">Check-out</div>
                             <div class="font-medium text-slate-900">{{ $pemesanan->tanggal_checkout->format('d M Y') }}</div>
                         </div>
-                        <div class="rounded-lg border p-3">
+                        <div class="rounded-lg border border-sky-100 bg-sky-50 p-3">
                             <div class="text-slate-600">Durasi</div>
                             <div class="font-medium text-slate-900">{{ $pemesanan->jumlah_hari }} malam</div>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center justify-between text-sm">
-                        <div class="text-slate-600">Total Bayar</div>
-                        <div class="text-lg font-semibold text-slate-900">Rp {{ number_format($pemesanan->total_bayar,0,',','.') }}</div>
+                    <div class="mt-4 rounded-lg border border-sky-100 bg-sky-50 p-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="text-slate-600">Total Bayar</div>
+                            <div class="text-lg font-semibold text-slate-900">Rp {{ number_format($pemesanan->total_bayar,0,',','.') }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <aside>
-                <div class="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+                <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
                     <h3 class="text-lg font-semibold text-slate-900">Konfirmasi Pembayaran</h3>
                     <p class="mt-1 text-sm text-slate-600">Unggah bukti pembayaran untuk mempercepat proses verifikasi.</p>
 
@@ -105,19 +107,19 @@ new #[Layout('components.layouts.public')] class extends Component {
                             </select>
                         </div>
                         @if($metode_bayar === 'transfer')
-                            <div class="rounded-lg border p-3 bg-slate-50">
-                                <div class="text-sm font-medium text-slate-900">Rekening Tujuan</div>
+                            <div class="rounded-lg border border-emerald-100 bg-emerald-50 p-3">
+                                <div class="text-sm font-medium text-emerald-900">Rekening Tujuan</div>
                                 <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                                     @forelse($banks as $b)
-                                        <div class="rounded-md bg-white border px-3 py-2">
-                                            <div class="text-slate-600">{{ $b['nama_bank'] }}</div>
+                                        <div class="rounded-md bg-white border border-emerald-100 px-3 py-2">
+                                            <div class="text-emerald-700">{{ $b['nama_bank'] }}</div>
                                             <div class="font-mono text-slate-900">{{ $b['no_transfer'] }}</div>
                                         </div>
                                     @empty
                                         <div class="text-slate-600">Belum ada data bank.</div>
                                     @endforelse
                                 </div>
-                                <div class="mt-2 text-xs text-slate-500">Silakan transfer sesuai total tagihan, kemudian unggah bukti pembayaran.</div>
+                                <div class="mt-2 text-xs text-emerald-700">Silakan transfer sesuai total tagihan, kemudian unggah bukti pembayaran.</div>
                             </div>
                         @endif
                         <input type="hidden" wire:model="jumlah" />
@@ -137,7 +139,6 @@ new #[Layout('components.layouts.public')] class extends Component {
         </div>
     </div>
 </section>
-
 
 
 

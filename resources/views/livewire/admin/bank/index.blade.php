@@ -55,8 +55,8 @@ new class extends Component {
                         <td class="py-2 px-3 font-mono">{{ $row->no_transfer }}</td>
                         <td class="py-2 px-3"><x-status-badge :status="$row->status" /></td>
                         <td class="py-2 px-3 text-right">
-                            <a href="{{ route('admin.bank.edit', $row->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200 hover:bg-amber-50">Edit</a>
-                            <button onclick="if(!confirm('Hapus bank ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $row->id }})" class="ml-2 inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
+                            <a href="{{ route('admin.bank.edit', $row->id) }}" class="ui-btn-secondary">Edit</a>
+                            <button onclick="if(!confirm('Hapus bank ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $row->id }})" class="ml-2 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>
                         </td>
                     </tr>
                 @endforeach
@@ -68,4 +68,3 @@ new class extends Component {
         {{ $this->items->links() }}
     </div>
 </section>
-

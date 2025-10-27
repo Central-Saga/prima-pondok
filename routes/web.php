@@ -77,6 +77,10 @@ Volt::route('admin/pembayaran/{pembayaran}/edit', 'admin.pembayaran.edit')->midd
 Volt::route('admin/bank', 'admin.bank.index')->middleware(['auth', 'role:admin'])->name('admin.bank.index');
 Volt::route('admin/bank/create', 'admin.bank.create')->middleware(['auth', 'role:admin'])->name('admin.bank.create');
 Volt::route('admin/bank/{bank}/edit', 'admin.bank.edit')->middleware(['auth', 'role:admin'])->name('admin.bank.edit');
+// Admin - Fasilitas CRUD pages
+Volt::route('admin/fasilitas', 'admin.fasilitas.index')->middleware(['auth', 'role:admin'])->name('admin.fasilitas.index');
+Volt::route('admin/fasilitas/create', 'admin.fasilitas.create')->middleware(['auth', 'role:admin'])->name('admin.fasilitas.create');
+Volt::route('admin/fasilitas/{fasilitas}/edit', 'admin.fasilitas.edit')->middleware(['auth', 'role:admin'])->name('admin.fasilitas.edit');
 // Admin - Pemesanan pages
 Volt::route('admin/pemesanan', 'admin.pemesanan.index')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.index');
 Volt::route('admin/pemesanan/create', 'admin.pemesanan.create')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.create');
@@ -99,15 +103,29 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
         ? \Illuminate\Support\Carbon::parse($request->input('to'))
         : now();
 
+    // Clone for querying so original $from/$to still available for filename logic
+    $qFrom = $from->copy()->startOfDay();
+    $qTo = $to->copy()->endOfDay();
+
     $rows = \App\Models\Pemesanan::with(['wisatawan','kamar'])
-        ->whereBetween('created_at', [$from->startOfDay(), $to->endOfDay()])
+        ->whereBetween('created_at', [$qFrom, $qTo])
         ->orderBy('id')
         ->get();
 
-    $filename = sprintf('Laporan Tanggal %s sampai %s.csv',
-        $from->format('Y-m-d'),
-        $to->format('Y-m-d')
-    );
+    // If the provided range exactly matches one calendar month, name file per month
+    $isFullMonth = $from->copy()->startOfDay()->equalTo($from->copy()->startOfMonth()->startOfDay())
+        && $to->copy()->endOfDay()->equalTo($to->copy()->endOfMonth()->endOfDay())
+        && $from->isSameMonth($to);
+
+    if ($isFullMonth) {
+        $months = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+        $filename = sprintf('Laporan Bulan %s %d.csv', $months[(int) $from->month] ?? $from->format('F'), (int) $from->year);
+    } else {
+        $filename = sprintf('Laporan Tanggal %s sampai %s.csv',
+            $from->format('Y-m-d'),
+            $to->format('Y-m-d')
+        );
+    }
     $headers = [
         'Content-Type' => 'text/csv',
         'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -138,3 +156,8 @@ Volt::route('booking', 'wisatawan.booking-index')->middleware(['auth', 'role:wis
 Volt::route('kamar/{kamar}', 'public.kamar-show')->name('kamar.show');
 
 require __DIR__.'/auth.php';
+
+// Guard against accidental GET requests to Livewire update endpoint (some browsers/prefetchers)
+Route::get('/livewire/update', function () {
+    return response()->noContent();
+});
