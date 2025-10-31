@@ -21,7 +21,7 @@ new class extends Component {
     <h1 class="text-2xl font-semibold text-slate-900">Dashboard Wisatawan</h1>
 
     <div class="mt-6">
-        <a href="{{ route('home') }}#kamar" class="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Cari Kamar</a>
+        <a href="{{ route('kamar.index') }}" class="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Cari Kamar</a>
     </div>
 
     <div class="mt-8">

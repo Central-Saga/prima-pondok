@@ -6,14 +6,15 @@
         </a>
         <nav class="flex items-center gap-4">
             @php($onHome = request()->routeIs('home'))
-            <a href="{{ $onHome ? '#kamar' : route('home').'#kamar' }}" class="text-slate-600 hover:text-slate-900">Kamar</a>
+            <a href="{{ route('kamar.index') }}" class="text-slate-600 hover:text-slate-900">Kamar</a>
+            <a href="{{ route('about') }}" class="text-slate-600 hover:text-slate-900">Tentang</a>
             <a href="{{ $onHome ? '#galeri' : route('home').'#galeri' }}" class="text-slate-600 hover:text-slate-900">Galeri</a>
             <a href="{{ $onHome ? '#kontak' : route('home').'#kontak' }}" class="text-slate-600 hover:text-slate-900">Kontak</a>
             @auth
                 @role('admin')
                     <a href="{{ route('admin.dashboard') }}" class="ui-btn-primary">Dashboard</a>
                 @elserole('wisatawan')
-                    <a href="{{ route('home') }}#kamar" class="ui-btn-primary">Pesan Kamar</a>
+                    <a href="{{ route('kamar.index') }}" class="ui-btn-primary">Pesan Kamar</a>
                     <a href="{{ route('booking.index') }}" class="ui-btn-secondary">Booking</a>
                 @else
                     <a href="{{ route('dashboard') }}" class="ui-btn-primary">Dashboard</a>
