@@ -40,7 +40,7 @@
                 <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{{ $heroTitle }}</h1>
                 <p class="mt-6 text-lg leading-8 text-white/90">{{ $heroSubtitle }}</p>
                 <div class="mt-10 flex items-center gap-x-3 sm:gap-x-4">
-                    <a href="#kamar" class="ui-btn-primary !bg-sky-600 hover:!bg-sky-500 ring-1 ring-white/20">Lihat Kamar</a>
+                    <a href="{{ route('kamar.index') }}" class="ui-btn-primary !bg-sky-600 hover:!bg-sky-500 ring-1 ring-white/20">Lihat Kamar</a>
                     <a href="#kontak" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md shadow-sm transition-colors hover:bg-white/20 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
                         Kontak Kami
                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
@@ -107,6 +107,11 @@
                 @empty
                     <div class="col-span-full text-slate-600">Belum ada data kamar.</div>
                 @endforelse
+                @if(($hasMoreKamar ?? false))
+                    <div class="col-span-full flex justify-center pt-2">
+                        <a href="{{ route('kamar.index') }}" class="ui-btn-secondary">Lihat Lebih Banyak</a>
+                    </div>
+                @endif
             </div>
         </div>
     </section>

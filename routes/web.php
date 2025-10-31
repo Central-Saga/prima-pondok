@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     $kamar = Kamar::query()->with('fotos')->where('status', 'available')->latest()->take(6)->get();
+    $hasMoreKamar = Kamar::query()->where('status','available')->count() > 6;
     $galeri = Galeri::query()->where('status', 'active')->orderBy('urutan')->take(8)->get();
     $hero_title = Setting::get('hero_title', 'Home Stay Pondok Teges');
     $hero_subtitle = Setting::get('hero_subtitle', 'Rasakan kenyamanan menginap di Ubud.');
     $contact_phone = Setting::get('contact_phone', '+62-812-0000-0000');
     $contact_email = Setting::get('contact_email', 'info@pondokteges.local');
     $contact_address = Setting::get('contact_address', 'Ubud, Bali — Indonesia');
-    return view('landing', compact('kamar', 'galeri', 'hero_title', 'hero_subtitle', 'contact_phone', 'contact_email', 'contact_address'));
+    return view('landing', compact('kamar', 'galeri', 'hero_title', 'hero_subtitle', 'contact_phone', 'contact_email', 'contact_address', 'hasMoreKamar'));
 })->name('home');
 
 // Public media route (works even if storage symlink not available on OS)
@@ -153,7 +154,11 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
 })->name('admin.laporan.export');
 Volt::route('booking/{pemesanan}', 'wisatawan.booking-show')->middleware(['auth', 'role:wisatawan'])->name('booking.show');
 Volt::route('booking', 'wisatawan.booking-index')->middleware(['auth', 'role:wisatawan'])->name('booking.index');
+// Public kamar listing and detail
+Volt::route('kamar', 'public.kamar-index')->name('kamar.index');
 Volt::route('kamar/{kamar}', 'public.kamar-show')->name('kamar.show');
+// About page
+Volt::route('about', 'public.about')->name('about');
 
 require __DIR__.'/auth.php';
 
