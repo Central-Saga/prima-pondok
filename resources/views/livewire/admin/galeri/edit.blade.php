@@ -66,7 +66,7 @@ new class extends Component {
         <p class="mt-1 text-slate-600 text-sm">Perbarui detail dan file gambar.</p>
     </div>
 
-    <form wire:submit="save" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 ui-card">
+    <form wire:submit.prevent="save" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 ui-card">
         <div>
             <label class="ui-label">Judul</label>
             <input type="text" wire:model="title" class="ui-input" />
