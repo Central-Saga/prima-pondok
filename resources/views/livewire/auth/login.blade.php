@@ -49,7 +49,14 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Jika proses dibuka dari detail kamar (guest booking), kembalikan ke sana
+        if ($kamarUrl = Session::pull('after_login.kamar_url')) {
+            $this->redirect($kamarUrl, navigate: true);
+            return;
+        }
+
+        // Jika tidak ada konteks khusus, pakai fallback dashboard seperti biasa
+        $this->redirect(route('dashboard', absolute: false), navigate: true);
     }
 
     /**

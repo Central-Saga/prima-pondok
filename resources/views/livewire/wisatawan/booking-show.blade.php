@@ -27,6 +27,15 @@ new #[Layout('components.layouts.public')] class extends Component {
         $this->banks = Bank::query()->where('status','active')->orderBy('nama_bank')->get(['nama_bank','no_transfer'])->toArray();
     }
 
+    public function cancel(): void
+    {
+        if ($this->pemesanan->status === Pemesanan::STATUS_PENDING) {
+            $this->pemesanan->update(['status' => Pemesanan::STATUS_CANCELLED]);
+        }
+
+        $this->redirectRoute('booking.index');
+    }
+
     public function submit(): void
     {
         $this->validate([
@@ -57,7 +66,13 @@ new #[Layout('components.layouts.public')] class extends Component {
                 <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900">Detail Pemesanan</h1>
                 <p class="mt-1 text-sm text-slate-600">Periksa ringkasan pemesanan dan unggah bukti pembayaran.</p>
             </div>
-            <a href="{{ route('home') }}" class="hidden sm:inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Kembali</a>
+            <button
+                type="button"
+                wire:click="cancel"
+                class="hidden sm:inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+            >
+                Kembali
+            </button>
         </div>
 
         <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -131,7 +146,9 @@ new #[Layout('components.layouts.public')] class extends Component {
 
                         <div class="pt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3">
                             <button class="ui-btn-primary w-full sm:w-auto">Kirim Bukti</button>
-                            <a href="{{ route('home') }}" class="mt-2 sm:mt-0 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Batal</a>
+                            <button type="button" wire:click="cancel" class="mt-2 sm:mt-0 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+                                Batal
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -139,6 +156,4 @@ new #[Layout('components.layouts.public')] class extends Component {
         </div>
     </div>
 </section>
-
-
 

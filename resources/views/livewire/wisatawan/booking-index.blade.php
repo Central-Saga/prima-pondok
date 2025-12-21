@@ -17,8 +17,18 @@ new #[Layout('components.layouts.public')] class extends Component {
     {
         $user = Auth::user();
         $wisatawanId = $user?->wisatawan?->id;
+
+        // Anggap semua pemesanan pending tanpa pembayaran sebagai hangus
+        // ketika pelanggan kembali melihat daftar booking (misalnya lewat tombol back browser)
+        Pemesanan::where('wisatawan_id', $wisatawanId)
+            ->where('status', Pemesanan::STATUS_PENDING)
+            ->whereDoesntHave('pembayaran')
+            ->update(['status' => Pemesanan::STATUS_CANCELLED]);
+
         return Pemesanan::with('kamar')
             ->where('wisatawan_id', $wisatawanId)
+            // Sembunyikan pemesanan yang dibatalkan oleh pelanggan dari daftar utama
+            ->where('status', '!=', Pemesanan::STATUS_CANCELLED)
             ->when($this->status !== 'all', fn($q) => $q->where('status',$this->status))
             ->latest()
             ->paginate(10);
@@ -83,4 +93,3 @@ new #[Layout('components.layouts.public')] class extends Component {
         </div>
     </div>
 </section>
-

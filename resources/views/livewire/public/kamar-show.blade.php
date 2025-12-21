@@ -79,7 +79,9 @@ new #[Layout('components.layouts.public')] class extends Component {
 
         $user = Auth::user();
         if (! $user) {
-            session()->put('url.intended', url()->current());
+            // Simpan URL detail kamar (bukan endpoint Livewire) untuk kembali setelah login
+            $kamarUrl = route('kamar.show', $this->kamar->id, absolute: false);
+            session()->put('after_login.kamar_url', $kamarUrl);
             $this->redirectRoute('login');
             return;
         }
