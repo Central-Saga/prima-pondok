@@ -10,12 +10,12 @@
                     $authImage = \App\Models\Setting::get('auth_left_image');
                 @endphp
                 <div class="absolute inset-0">
-                    <img src="{{ $authImage ? asset($authImage) : asset('storage/login/login reg page.webp') }}" alt="" class="h-full w-full object-cover">
+                    <img src="{{ $authImage ? asset($authImage) : asset('images/PYS08178.JPG') }}" alt="" class="h-full w-full object-cover">
                 </div>
                 <div class="absolute inset-0 bg-neutral-900/60"></div>
                 <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium" wire:navigate>
                     <span class="flex h-24 w-24 items-center justify-center rounded-md">
-                        <img src="{{ asset('storage/logo/5.png') }}" alt="Logo" class="h-24 w-24 object-contain" />
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-24 w-24 object-contain" />
                     </span>
                     {{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}
                 </a>
@@ -35,7 +35,7 @@
                 <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
                     <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden" wire:navigate>
                         <span class="flex h-20 w-20 items-center justify-center rounded-md">
-                            <img src="{{ asset('storage/logo/5.png') }}" alt="Logo" class="h-20 w-20 object-contain" />
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-20 w-20 object-contain" />
                         </span>
 
                         <span class="sr-only">{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}</span>

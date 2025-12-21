@@ -1,7 +1,7 @@
 <header data-site-header class="sticky top-0 z-40 bg-white/70 backdrop-blur border-b transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 lg:h-24 flex items-center justify-between">
         <a href="{{ route('home') }}" class="flex items-center gap-3 font-semibold tracking-tight text-slate-900">
-            <img src="{{ asset('storage/logo/3.png') }}" alt="Logo" class="h-20 w-20 lg:h-24 lg:w-24 object-contain shrink-0 self-center" />
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-20 w-20 lg:h-24 lg:w-24 object-contain shrink-0 self-center" />
             <span>{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}</span>
         </a>
         <nav class="flex items-center gap-4">
