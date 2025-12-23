@@ -108,7 +108,7 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Masuk ke akun Anda')" :description="__('Silakan masuk dengan email dan kata sandi untuk melanjutkan')" />
+    <x-auth-header :title="__('auth.login_title')" :description="__('auth.login_description')" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -118,7 +118,7 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
         <!-- Email Address -->
         <flux:input
             wire:model="email"
-            :label="__('Alamat email')"
+            :label="__('auth.email')"
             type="email"
             required
             autofocus
@@ -130,27 +130,27 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
         <div class="relative">
             <flux:input
                 wire:model="password"
-                :label="__('Kata sandi')"
+                :label="__('auth.password_label')"
                 type="password"
                 required
                 autocomplete="current-password"
-                :placeholder="__('Kata sandi')"
+                :placeholder="__('auth.password_placeholder')"
                 viewable
             />
 
             @if (Route::has('password.request'))
                 <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
-                    {{ __('Lupa kata sandi?') }}
+                    {{ __('auth.forgot_password') }}
                 </flux:link>
             @endif
         </div>
 
         <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Ingat saya')" />
+        <flux:checkbox wire:model="remember" :label="__('auth.remember_me')" />
 
         <div class="flex items-center justify-end">
             <flux:button variant="primary" type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white" data-test="login-button">
-                {{ __('Masuk') }}
+                {{ __('auth.login_button') }}
             </flux:button>
         </div>
     </form>
@@ -158,8 +158,8 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
 
     @if (Route::has('register'))
         <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
-            <span>{{ __("Belum punya akun?") }}</span>
-            <flux:link :href="route('register')" class="text-sky-700 hover:underline" wire:navigate>{{ __('Daftar') }}</flux:link>
+            <span>{{ __('auth.no_account') }}</span>
+            <flux:link :href="route('register')" class="text-sky-700 hover:underline" wire:navigate>{{ __('auth.register_link') }}</flux:link>
         </div>
     @endif
 </div>

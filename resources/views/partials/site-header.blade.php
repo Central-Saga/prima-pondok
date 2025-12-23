@@ -6,26 +6,38 @@
         </a>
         <nav class="flex items-center gap-4">
             @php($onHome = request()->routeIs('home'))
-            <a href="{{ route('kamar.index') }}" class="text-slate-600 hover:text-slate-900">Kamar</a>
-            <a href="{{ route('about') }}" class="text-slate-600 hover:text-slate-900">Tentang</a>
-            <a href="{{ $onHome ? '#galeri' : route('home').'#galeri' }}" class="text-slate-600 hover:text-slate-900">Galeri</a>
-            <a href="{{ $onHome ? '#kontak' : route('home').'#kontak' }}" class="text-slate-600 hover:text-slate-900">Kontak</a>
+            <a href="{{ route('kamar.index') }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.rooms') }}</a>
+            <a href="{{ route('about') }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.about') }}</a>
+            <a href="{{ $onHome ? '#galeri' : route('home').'#galeri' }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.gallery') }}</a>
+            <a href="{{ $onHome ? '#kontak' : route('home').'#kontak' }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.contact') }}</a>
+
+            <div class="flex items-center gap-1 border rounded-full px-1 py-0.5 text-xs">
+                @php($locale = app()->getLocale())
+                <a href="{{ route('locale.switch', ['locale' => 'id']) }}"
+                   class="px-2 py-0.5 rounded-full {{ $locale === 'id' ? 'bg-[#00A6F4] text-white' : 'text-slate-600 hover:text-slate-900' }}">
+                    ID
+                </a>
+                <a href="{{ route('locale.switch', ['locale' => 'en']) }}"
+                   class="px-2 py-0.5 rounded-full {{ $locale === 'en' ? 'bg-[#00A6F4] text-white' : 'text-slate-600 hover:text-slate-900' }}">
+                    EN
+                </a>
+            </div>
             @auth
                 @role('admin')
-                    <a href="{{ route('admin.dashboard') }}" class="ui-btn-primary">Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="ui-btn-primary">{{ __('nav.dashboard') }}</a>
                 @elserole('wisatawan')
-                    <a href="{{ route('kamar.index') }}" class="ui-btn-primary">Pesan Kamar</a>
-                    <a href="{{ route('booking.index') }}" class="ui-btn-secondary">Booking</a>
+                    <a href="{{ route('kamar.index') }}" class="ui-btn-primary">{{ __('nav.book_room') }}</a>
+                    <a href="{{ route('booking.index') }}" class="ui-btn-secondary">{{ __('nav.bookings') }}</a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="ui-btn-primary">Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="ui-btn-primary">{{ __('nav.dashboard') }}</a>
                 @endrole
                 <form method="POST" action="{{ route('logout') }}" class="m-0">
                     @csrf
-                    <button type="submit" class="ui-btn-secondary">Keluar</button>
+                    <button type="submit" class="ui-btn-secondary">{{ __('nav.logout') }}</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="ui-btn-secondary">Masuk</a>
-                <a href="{{ route('register') }}" class="ui-btn-primary">Daftar</a>
+                <a href="{{ route('login') }}" class="ui-btn-secondary">{{ __('nav.login') }}</a>
+                <a href="{{ route('register') }}" class="ui-btn-primary">{{ __('nav.register') }}</a>
             @endauth
         </nav>
     </div>

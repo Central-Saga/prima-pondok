@@ -1,7 +1,7 @@
 <x-layouts.public>
     @php
-        $heroTitle = \App\Models\Setting::get('hero_title', 'Home Stay Pondok Teges');
-        $heroSubtitle = \App\Models\Setting::get('hero_subtitle', 'Rasakan kenyamanan menginap di kawasan Ubud.');
+        $heroTitle = \App\Models\Setting::get('hero_title', __('landing.hero_default_title'));
+        $heroSubtitle = \App\Models\Setting::get('hero_subtitle', __('landing.hero_default_subtitle'));
     @endphp
 
     <!-- Hero -->
@@ -13,7 +13,7 @@
                 @continue($p === '')
                 @php($src = \Illuminate\Support\Str::startsWith($p, ['http://','https://']) ? $p : asset('storage/'.$p))
                 <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
-                    <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
+                    <img src="{{ $src }}" alt="{{ $g->title ?? __('landing.gallery_alt') }}" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                 </div>
             @empty
                 <div class="absolute inset-0 bg-slate-100"></div>
@@ -40,9 +40,9 @@
                 <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl">{{ $heroTitle }}</h1>
                 <p class="mt-6 text-lg leading-8 text-white/90">{{ $heroSubtitle }}</p>
                 <div class="mt-10 flex items-center gap-x-3 sm:gap-x-4">
-                    <a href="{{ route('kamar.index') }}" class="ui-btn-primary !bg-sky-600 hover:!bg-sky-500 ring-1 ring-white/20">Lihat Kamar</a>
+                    <a href="{{ route('kamar.index') }}" class="ui-btn-primary !bg-sky-600 hover:!bg-sky-500 ring-1 ring-white/20">{{ __('landing.hero_view_rooms') }}</a>
                     <a href="#kontak" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md shadow-sm transition-colors hover:bg-white/20 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
-                        Kontak Kami
+                        {{ __('landing.hero_contact_us') }}
                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
                     </a>
                 </div>
@@ -54,10 +54,10 @@
                             @continue($p === '')
                             @php($src = \Illuminate\Support\Str::startsWith($p, ['http://','https://']) ? $p : asset('storage/'.$p))
                             <div class="absolute inset-0 transition-opacity duration-700 ease-in-out {{ $idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}" data-slide>
-                                <img src="{{ $src }}" alt="{{ $g->title ?? 'Galeri' }}" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
+                                <img src="{{ $src }}" alt="{{ $g->title ?? __('landing.gallery_alt') }}" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                             </div>
                         @empty
-                            <div class="absolute inset-0 grid place-items-center text-slate-400">Tidak ada gambar</div>
+                            <div class="absolute inset-0 grid place-items-center text-slate-400">{{ __('landing.hero_no_image') }}</div>
                         @endforelse
                         <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none"></div>
 
@@ -81,7 +81,7 @@
     <section id="kamar" class="py-16 sm:py-24 scroll-mt-24 bg-sky-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between">
-                <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Kamar Tersedia</h2>
+                <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('landing.rooms_section_title') }}</h2>
             </div>
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse(($kamar ?? []) as $item)
@@ -91,25 +91,25 @@
                                 <img src="{{ asset('storage/'.$item->fotos->first()->path) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                             </div>
                         @else
-                            <div class="h-40 bg-slate-100 flex items-center justify-center text-slate-400">Foto</div>
+                            <div class="h-40 bg-slate-100 flex items-center justify-center text-slate-400">{{ __('landing.rooms_no_photo') }}</div>
                         @endif
                         <div class="p-4">
                             <h3 class="text-lg font-medium text-slate-900">{{ $item->nama_kamar }}</h3>
                             <div class="mt-2">
-                                <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">{{ $item->tipe_kamar ?: 'Tipe Standar' }}</span>
+                                <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">{{ $item->tipe_kamar ?: __('landing.rooms_default_type') }}</span>
                             </div>
-                            <p class="mt-2 font-semibold text-slate-900">Rp {{ number_format($item->harga, 0, ',', '.') }}/malam</p>
+                            <p class="mt-2 font-semibold text-slate-900">Rp {{ number_format($item->harga, 0, ',', '.') }}{{ __('landing.rooms_price_suffix') }}</p>
                             <div class="mt-4">
-                                <a href="{{ route('kamar.show', $item->id) }}" class="ui-btn-primary">Pesan Sekarang</a>
+                                <a href="{{ route('kamar.show', $item->id) }}" class="ui-btn-primary">{{ __('landing.rooms_book_now') }}</a>
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full text-slate-600">Belum ada data kamar.</div>
+                    <div class="col-span-full text-slate-600">{{ __('landing.rooms_no_data') }}</div>
                 @endforelse
                 @if(($hasMoreKamar ?? false))
                     <div class="col-span-full flex justify-center pt-2">
-                        <a href="{{ route('kamar.index') }}" class="ui-btn-secondary">Lihat Lebih Banyak</a>
+                        <a href="{{ route('kamar.index') }}" class="ui-btn-secondary">{{ __('landing.rooms_see_more') }}</a>
                     </div>
                 @endif
             </div>
@@ -119,7 +119,7 @@
     <!-- Fasilitas with icons -->
     <section id="fasilitas" class="py-16 bg-white scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Mengapa Memilih Kami</h2>
+            <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('landing.why_choose_us_title') }}</h2>
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
                     <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
@@ -129,7 +129,7 @@
                         </svg>
                     </span>
                     <div class="mt-0.5">
-                        <div class="text-base font-semibold text-slate-900">Lokasi strategis di Ubud</div>
+                        <div class="text-base font-semibold text-slate-900">{{ __('landing.why_location') }}</div>
                     </div>
                 </div>
 
@@ -140,7 +140,7 @@
                         </svg>
                     </span>
                     <div class="mt-0.5">
-                        <div class="text-base font-semibold text-slate-900">Kamar bersih dan nyaman</div>
+                        <div class="text-base font-semibold text-slate-900">{{ __('landing.why_clean_rooms') }}</div>
                     </div>
                 </div>
 
@@ -151,7 +151,7 @@
                         </svg>
                     </span>
                     <div class="mt-0.5">
-                        <div class="text-base font-semibold text-slate-900">Harga bersahabat &amp; transparan</div>
+                        <div class="text-base font-semibold text-slate-900">{{ __('landing.why_fair_price') }}</div>
                     </div>
                 </div>
 
@@ -162,7 +162,7 @@
                         </svg>
                     </span>
                     <div class="mt-0.5">
-                        <div class="text-base font-semibold text-slate-900">Wi‑Fi cepat dan stabil</div>
+                        <div class="text-base font-semibold text-slate-900">{{ __('landing.why_wifi') }}</div>
                     </div>
                 </div>
 
@@ -173,7 +173,7 @@
                         </svg>
                     </span>
                     <div class="mt-0.5">
-                        <div class="text-base font-semibold text-slate-900">Staf ramah dan responsif</div>
+                        <div class="text-base font-semibold text-slate-900">{{ __('landing.why_friendly_staff') }}</div>
                     </div>
                 </div>
 
@@ -184,7 +184,7 @@
                         </svg>
                     </span>
                     <div class="mt-0.5">
-                        <div class="text-base font-semibold text-slate-900">Proses booking mudah</div>
+                        <div class="text-base font-semibold text-slate-900">{{ __('landing.why_easy_booking') }}</div>
                     </div>
                 </div>
             </div>
@@ -194,7 +194,7 @@
     <!-- Galeri -->
     <section id="galeri" class="py-16 scroll-mt-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">Galeri</h2>
+            <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('landing.gallery_title') }}</h2>
             <div class="mt-8 rounded-2xl bg-white ring-1 ring-slate-100 p-4 sm:p-5">
                 <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
                     @forelse(($galeri ?? []) as $i => $g)
@@ -211,7 +211,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="text-slate-600">Belum ada foto.</div>
+                        <div class="text-slate-600">{{ __('landing.gallery_none') }}</div>
                     @endforelse
                 </div>
             </div>
@@ -222,7 +222,7 @@
     <section id="kontak" class="py-16 bg-slate-900 text-white scroll-mt-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 sm:grid-cols-2">
             <div>
-                <h2 class="text-2xl sm:text-3xl font-semibold">Kontak</h2>
+                <h2 class="text-2xl sm:text-3xl font-semibold">{{ __('landing.contact_section_title') }}</h2>
                 <div class="mt-4 space-y-3 text-slate-200">
                     <div class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -256,7 +256,7 @@
   <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
 </svg>
 
-                        Chat WhatsApp
+                        {{ __('landing.contact_whatsapp') }}
                     </a>
                 </div>
             </div>
@@ -320,14 +320,14 @@
 
       overlay.innerHTML = `
         <div class="absolute inset-0 grid place-items-center p-4">
-          <img class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl" alt="Galeri" />
-          <button type="button" aria-label="Tutup" class="absolute top-4 right-4 rounded-full bg-white/90 hover:bg-white p-2 shadow">
+          <img class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl" alt="{{ __('landing.gallery_alt') }}" />
+          <button type="button" aria-label="{{ __('landing.lightbox_close') }}" class="absolute top-4 right-4 rounded-full bg-white/90 hover:bg-white p-2 shadow">
             <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.222 4.222a.75.75 0 011.06 0L10 8.94l4.718-4.718a.75.75 0 111.06 1.06L11.06 10l4.718 4.718a.75.75 0 11-1.06 1.06L10 11.06l-4.718 4.718a.75.75 0 11-1.06-1.06L8.94 10 4.222 5.282a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
           </button>
-          <button type="button" aria-label="Sebelumnya" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
+          <button type="button" aria-label="{{ __('landing.lightbox_prev') }}" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
             <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.78 4.22a.75.75 0 010 1.06L8.06 10l4.72 4.72a.75.75 0 11-1.06 1.06l-5.25-5.25a.75.75 0 010-1.06l5.25-5.25a.75.75 0 011.06 0z" clip-rule="evenodd"/></svg>
           </button>
-          <button type="button" aria-label="Berikutnya" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
+          <button type="button" aria-label="{{ __('landing.lightbox_next') }}" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
             <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.22 15.78a.75.75 0 010-1.06L11.94 10 7.22 5.28a.75.75 0 111.06-1.06l5.25 5.25a.75.75 0 010 1.06l-5.25 5.25a.75.75 0 01-1.06 0z" clip-rule="evenodd"/></svg>
           </button>
         </div>

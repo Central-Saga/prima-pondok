@@ -1,0 +1,37 @@
+<?php
+
+return [
+    'detail_title' => 'Booking Details',
+    'detail_subtitle' => 'Review your booking summary and upload payment proof.',
+    'back' => 'Back',
+    'room' => 'Room',
+    'checkin' => 'Check-in',
+    'checkout' => 'Check-out',
+    'duration' => 'Duration',
+    'nights' => 'night|nights',
+    'total' => 'Total Payment',
+    'confirm_payment' => 'Payment Confirmation',
+    'confirm_payment_subtitle' => 'Upload your payment proof to speed up verification.',
+    'method' => 'Method',
+    'bank_transfer' => 'Bank Transfer',
+    'cash' => 'Cash',
+    'destination_account' => 'Destination Account',
+    'no_bank_data' => 'No bank data yet.',
+    'bank_note' => 'Please transfer according to the total bill, then upload the payment proof.',
+    'payment_proof' => 'Payment Proof',
+    'submit_proof' => 'Submit Proof',
+    'cancel' => 'Cancel',
+
+    // Booking index (history)
+    'history_title' => 'Booking History',
+    'history_subtitle' => 'Track your booking status.',
+    'filter_all' => 'All',
+    'filter_pending' => 'Pending',
+    'filter_confirmed' => 'Confirmed',
+    'filter_cancelled' => 'Cancelled',
+    'filter_completed' => 'Completed',
+    'code' => 'Code',
+    'total_header' => 'Total',
+    'status_header' => 'Status',
+    'no_bookings' => 'No bookings yet.',
+];

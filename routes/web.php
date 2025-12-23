@@ -16,7 +16,7 @@ Route::get('/', function () {
     $hero_subtitle = Setting::get('hero_subtitle', 'Rasakan kenyamanan menginap di Ubud.');
     $contact_phone = Setting::get('contact_phone', '+62-812-0000-0000');
     $contact_email = Setting::get('contact_email', 'info@pondokteges.local');
-    $contact_address = Setting::get('contact_address', 'Ubud, Bali — Indonesia');
+    $contact_address = Setting::get('contact_address', 'Ubud, Bali - Indonesia');
     return view('landing', compact('kamar', 'galeri', 'hero_title', 'hero_subtitle', 'contact_phone', 'contact_email', 'contact_address', 'hasMoreKamar'));
 })->name('home');
 
@@ -159,6 +159,16 @@ Volt::route('kamar', 'public.kamar-index')->name('kamar.index');
 Volt::route('kamar/{kamar}', 'public.kamar-show')->name('kamar.show');
 // About page
 Volt::route('about', 'public.about')->name('about');
+
+Route::get('lang/{locale}', function (string $locale) {
+    if (! in_array($locale, ['id', 'en'], true)) {
+        abort(404);
+    }
+
+    session(['locale' => $locale]);
+
+    return back();
+})->name('locale.switch');
 
 require __DIR__.'/auth.php';
 

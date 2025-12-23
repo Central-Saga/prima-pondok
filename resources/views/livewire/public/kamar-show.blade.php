@@ -42,7 +42,7 @@ new #[Layout('components.layouts.public')] class extends Component {
         $start = \Carbon\Carbon::parse($this->tanggal_checkin)->startOfDay();
         $end = \Carbon\Carbon::parse($this->tanggal_checkout)->startOfDay();
         if ($end->lte($start)) {
-            $this->messageText = 'Tanggal checkout harus setelah checkin';
+            $this->messageText = __('rooms.error_checkout_after_checkin');
             return;
         }
 
@@ -60,7 +60,7 @@ new #[Layout('components.layouts.public')] class extends Component {
             })->exists();
 
         if ($overlap) {
-            $this->messageText = 'Kamar tidak tersedia pada tanggal tersebut';
+            $this->messageText = __('rooms.error_not_available');
         }
     }
 
@@ -157,13 +157,13 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ $kamar->nama_kamar }}</h1>
                     </div>
                     <div class="mt-2 flex flex-wrap items-center gap-3 text-slate-600">
-                        <span>Tipe: <span class="font-medium text-slate-900">{{ $kamar->tipe_kamar ?: 'Standar' }}</span></span>
-                        <span class="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-200">Rp {{ number_format($kamar->harga,0,',','.') }} / malam</span>
+                        <span>{{ __('rooms.type_label') }} <span class="font-medium text-slate-900">{{ $kamar->tipe_kamar ?: __('rooms.type_default') }}</span></span>
+                        <span class="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-200">Rp {{ number_format($kamar->harga,0,',','.') }} {{ __('rooms.price_badge_suffix') }}</span>
                     </div>
                     @php($colors = ['emerald','sky','amber','violet','rose','indigo'])
                     @if(($kamar->fasilitas ?? collect())->isNotEmpty())
                         <div class="mt-4">
-                            <h2 class="text-lg font-semibold text-slate-900">Fasilitas</h2>
+                            <h2 class="text-lg font-semibold text-slate-900">{{ __('rooms.facilities_title') }}</h2>
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @foreach($kamar->fasilitas as $f)
                                     @php($c = $colors[$loop->index % count($colors)])
@@ -175,7 +175,7 @@ new #[Layout('components.layouts.public')] class extends Component {
 
                     @if($kamar->deskripsi)
                         <div class="mt-4">
-                            <h2 class="text-lg font-semibold text-slate-900">Deskripsi</h2>
+                            <h2 class="text-lg font-semibold text-slate-900">{{ __('rooms.description_title') }}</h2>
                             <div class="mt-2 whitespace-pre-line text-slate-700 leading-relaxed">{{ $kamar->deskripsi }}</div>
                         </div>
                     @endif
@@ -185,17 +185,17 @@ new #[Layout('components.layouts.public')] class extends Component {
             <!-- Booking card on the right, sticky on large screens -->
             <div class="lg:col-span-5">
                 <div id="booking" class="mt-2 lg:mt-0 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm lg:sticky lg:top-24">
-                    <h3 class="text-lg font-semibold text-slate-900">Pesan Kamar Ini</h3>
-                    <p class="mt-1 text-sm text-slate-600">Pilih tanggal check-in dan check-out.</p>
+                    <h3 class="text-lg font-semibold text-slate-900">{{ __('rooms.book_card_title') }}</h3>
+                    <p class="mt-1 text-sm text-slate-600">{{ __('rooms.book_card_subtitle') }}</p>
 
                     <form wire:submit="pesan" class="mt-4 space-y-4">
                         <div>
-                            <label class="ui-label">Tanggal Check-in</label>
+                            <label class="ui-label">{{ __('rooms.checkin_label') }}</label>
                             <input type="date" min="{{ now()->toDateString() }}" wire:model.live.debounce.1000ms="tanggal_checkin" class="ui-input" />
                             @error('tanggal_checkin') <div class="ui-error">{{ $message }}</div> @enderror
                         </div>
                         <div>
-                            <label class="ui-label">Tanggal Check-out</label>
+                            <label class="ui-label">{{ __('rooms.checkout_label') }}</label>
                             <input type="date" @if($tanggal_checkin) min="{{ \Carbon\Carbon::parse($tanggal_checkin)->addDay()->toDateString() }}" @endif wire:model.live.debounce.1000ms="tanggal_checkout" class="ui-input" />
                             @error('tanggal_checkout') <div class="ui-error">{{ $message }}</div> @enderror
                         </div>
@@ -205,16 +205,19 @@ new #[Layout('components.layouts.public')] class extends Component {
                         @endif
 
                         <div class="rounded-lg border p-3 text-sm text-slate-700">
-                            <div>Jumlah malam: <span class="font-semibold">{{ $jumlah_hari }}</span></div>
-                            <div>Total bayar: <span class="font-semibold">Rp {{ number_format($total_bayar,0,',','.') }}</span></div>
+                            <div>{{ __('rooms.nights_label') }} <span class="font-semibold">{{ $jumlah_hari }}</span></div>
+                            <div>{{ __('rooms.total_label') }} <span class="font-semibold">Rp {{ number_format($total_bayar,0,',','.') }}</span></div>
                         </div>
 
                         <div class="pt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                            <button class="ui-btn-primary w-full sm:w-auto">Pesan Sekarang</button>
-                            <a href="{{ route('home') }}" class="mt-2 sm:mt-0 ui-btn-secondary">Kembali</a>
+                            <button class="ui-btn-primary w-full sm:w-auto">{{ __('rooms.book_now') }}</button>
+                            <a href="{{ route('home') }}" class="mt-2 sm:mt-0 ui-btn-secondary">{{ __('rooms.back_button') }}</a>
                             @php($wa = preg_replace('/\D/','', Setting::get('contact_phone','+62')))
-                            @php($msg = rawurlencode('Halo, saya tertarik memesan '.$kamar->nama_kamar.' pada tanggal '.($tanggal_checkin ?: '-').' s/d '.($tanggal_checkout ?: '-').'.'))
-                            <a href="https://wa.me/{{ $wa }}?text={{ $msg }}" target="_blank" rel="noopener" class="mt-2 sm:mt-0 ui-btn-secondary">Tanya via WhatsApp</a>
+                            @php($msg = rawurlencode((app()->getLocale() === 'en'
+                                ? 'Hello, I am interested in booking '.$kamar->nama_kamar.' on '.$tanggal_checkin.' to '.$tanggal_checkout.'.'
+                                : 'Halo, saya tertarik memesan '.$kamar->nama_kamar.' pada tanggal '.($tanggal_checkin ?: '-').' s/d '.($tanggal_checkout ?: '-').'.'
+                            )))
+                            <a href="https://wa.me/{{ $wa }}?text={{ $msg }}" target="_blank" rel="noopener" class="mt-2 sm:mt-0 ui-btn-secondary">{{ __('rooms.ask_whatsapp') }}</a>
                         </div>
                     </form>
                 </div>

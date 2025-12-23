@@ -39,16 +39,16 @@ new #[Layout('components.layouts.public')] class extends Component {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900">Riwayat Booking</h1>
-                <p class="mt-1 text-sm text-slate-600">Pantau status pemesanan Anda.</p>
+                <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('booking.history_title') }}</h1>
+                <p class="mt-1 text-sm text-slate-600">{{ __('booking.history_subtitle') }}</p>
             </div>
             <div class="flex items-center gap-3">
                 <select wire:model="status" class="ui-select w-40">
-                    <option value="all">Semua</option>
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="completed">Completed</option>
+                    <option value="all">{{ __('booking.filter_all') }}</option>
+                    <option value="pending">{{ __('booking.filter_pending') }}</option>
+                    <option value="confirmed">{{ __('booking.filter_confirmed') }}</option>
+                    <option value="cancelled">{{ __('booking.filter_cancelled') }}</option>
+                    <option value="completed">{{ __('booking.filter_completed') }}</option>
                 </select>
             </div>
         </div>
@@ -57,12 +57,12 @@ new #[Layout('components.layouts.public')] class extends Component {
             <table class="min-w-full text-sm">
                 <thead class="bg-slate-50 text-slate-600">
                     <tr>
-                        <th class="py-2 px-3 text-left">Kode</th>
-                        <th class="py-2 px-3 text-left">Kamar</th>
-                        <th class="py-2 px-3 text-left">Check-in</th>
-                        <th class="py-2 px-3 text-left">Check-out</th>
-                        <th class="py-2 px-3 text-left">Total</th>
-                        <th class="py-2 px-3 text-left">Status</th>
+                        <th class="py-2 px-3 text-left">{{ __('booking.code') }}</th>
+                        <th class="py-2 px-3 text-left">{{ __('booking.room') }}</th>
+                        <th class="py-2 px-3 text-left">{{ __('booking.checkin') }}</th>
+                        <th class="py-2 px-3 text-left">{{ __('booking.checkout') }}</th>
+                        <th class="py-2 px-3 text-left">{{ __('booking.total_header') }}</th>
+                        <th class="py-2 px-3 text-left">{{ __('booking.status_header') }}</th>
                         <th class="py-2 px-3"></th>
                     </tr>
                 </thead>
@@ -81,7 +81,7 @@ new #[Layout('components.layouts.public')] class extends Component {
                         </tr>
                     @empty
                         <tr>
-                            <td class="py-6 px-3 text-center text-slate-600" colspan="7">Belum ada pemesanan.</td>
+                            <td class="py-6 px-3 text-center text-slate-600" colspan="7">{{ __('booking.no_bookings') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

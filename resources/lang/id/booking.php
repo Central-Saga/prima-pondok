@@ -1,0 +1,37 @@
+<?php
+
+return [
+    'detail_title' => 'Detail Pemesanan',
+    'detail_subtitle' => 'Periksa ringkasan pemesanan dan unggah bukti pembayaran.',
+    'back' => 'Kembali',
+    'room' => 'Kamar',
+    'checkin' => 'Check-in',
+    'checkout' => 'Check-out',
+    'duration' => 'Durasi',
+    'nights' => 'malam',
+    'total' => 'Total Bayar',
+    'confirm_payment' => 'Konfirmasi Pembayaran',
+    'confirm_payment_subtitle' => 'Unggah bukti pembayaran untuk mempercepat proses verifikasi.',
+    'method' => 'Metode',
+    'bank_transfer' => 'Transfer Bank',
+    'cash' => 'Tunai',
+    'destination_account' => 'Rekening Tujuan',
+    'no_bank_data' => 'Belum ada data bank.',
+    'bank_note' => 'Silakan transfer sesuai total tagihan, kemudian unggah bukti pembayaran.',
+    'payment_proof' => 'Bukti Pembayaran',
+    'submit_proof' => 'Kirim Bukti',
+    'cancel' => 'Batal',
+
+    // Booking index (riwayat)
+    'history_title' => 'Riwayat Booking',
+    'history_subtitle' => 'Pantau status pemesanan Anda.',
+    'filter_all' => 'Semua',
+    'filter_pending' => 'Pending',
+    'filter_confirmed' => 'Confirmed',
+    'filter_cancelled' => 'Cancelled',
+    'filter_completed' => 'Completed',
+    'code' => 'Kode',
+    'total_header' => 'Total',
+    'status_header' => 'Status',
+    'no_bookings' => 'Belum ada pemesanan.',
+];

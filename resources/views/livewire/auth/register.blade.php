@@ -51,7 +51,7 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Buat akun baru')" :description="__('Isi detail Anda di bawah untuk membuat akun')" />
+    <x-auth-header :title="__('auth.register_title')" :description="__('auth.register_description')" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -61,18 +61,18 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
         <!-- Name -->
         <flux:input
             wire:model="name"
-            :label="__('Nama lengkap')"
+            :label="__('auth.name')"
             type="text"
             required
             autofocus
             autocomplete="name"
-            :placeholder="__('Nama lengkap')"
+            :placeholder="__('auth.name_placeholder')"
         />
 
         <!-- Email Address -->
         <flux:input
             wire:model="email"
-            :label="__('Alamat email')"
+            :label="__('auth.email')"
             type="email"
             required
             autocomplete="email"
@@ -82,35 +82,35 @@ new #[Layout('components.layouts.auth.split')] class extends Component {
         <!-- Password -->
         <flux:input
             wire:model="password"
-            :label="__('Kata sandi')"
+            :label="__('auth.password_label')"
             type="password"
             required
             autocomplete="new-password"
-            :placeholder="__('Kata sandi')"
+            :placeholder="__('auth.password_placeholder')"
             viewable
         />
 
         <!-- Confirm Password -->
         <flux:input
             wire:model="password_confirmation"
-            :label="__('Konfirmasi kata sandi')"
+            :label="__('auth.confirm_password_label')"
             type="password"
             required
             autocomplete="new-password"
-            :placeholder="__('Konfirmasi kata sandi')"
+            :placeholder="__('auth.confirm_password_placeholder')"
             viewable
         />
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full bg-sky-600 hover:bg-sky-500 text-white" data-test="register-user-button">
-                {{ __('Buat akun') }}
+                {{ __('auth.register_button') }}
             </flux:button>
         </div>
     </form>
     </div>
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-        <span>{{ __('Sudah punya akun?') }}</span>
-        <flux:link :href="route('login')" class="text-sky-700 hover:underline" wire:navigate>{{ __('Masuk') }}</flux:link>
+        <span>{{ __('auth.have_account') }}</span>
+        <flux:link :href="route('login')" class="text-sky-700 hover:underline" wire:navigate>{{ __('auth.login_link') }}</flux:link>
     </div>
 </div>
