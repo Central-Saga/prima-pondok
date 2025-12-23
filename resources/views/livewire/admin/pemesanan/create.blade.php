@@ -3,6 +3,7 @@
 use App\Models\Pemesanan;
 use App\Models\Kamar;
 use App\Models\Wisatawan;
+use App\Models\User;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -10,6 +11,8 @@ new class extends Component {
     public array $kamarList = [];
 
     public ?int $wisatawan_id = null;
+    public ?string $wisatawan_nama = null;
+    public bool $use_manual_wisatawan = false;
     public ?int $kamar_id = null;
     public ?string $tanggal_checkin = null;
     public ?string $tanggal_checkout = null;
@@ -25,6 +28,14 @@ new class extends Component {
 
     public function updated($field): void
     {
+        if ($field === 'use_manual_wisatawan') {
+            if ($this->use_manual_wisatawan) {
+                $this->wisatawan_id = null;
+            } else {
+                $this->wisatawan_nama = null;
+            }
+        }
+
         if (in_array($field, ['tanggal_checkin','tanggal_checkout','kamar_id'])) {
             $this->recalc();
         }
@@ -45,15 +56,55 @@ new class extends Component {
 
     public function save(): void
     {
-        $data = $this->validate([
-            'wisatawan_id' => 'required|exists:wisatawan,id',
+        $rules = [
             'kamar_id' => 'required|exists:kamar,id',
             'tanggal_checkin' => 'required|date',
             'tanggal_checkout' => 'required|date|after:tanggal_checkin',
             'jumlah_hari' => 'required|integer|min:1',
             'total_bayar' => 'required|numeric|min:0',
             'status' => 'required|string',
-        ]);
+        ];
+
+        if ($this->use_manual_wisatawan) {
+            $rules['wisatawan_nama'] = 'required|string|max:255';
+        } else {
+            $rules['wisatawan_id'] = 'required|exists:wisatawan,id';
+        }
+
+        $data = $this->validate($rules);
+
+        if ($this->use_manual_wisatawan) {
+            $baseEmail = str_replace(' ', '', strtolower($this->wisatawan_nama));
+            $email = $baseEmail.'@example.com';
+
+            // Ensure unique email by appending a counter if needed
+            $counter = 1;
+            while (User::where('email', $email)->exists()) {
+                $email = $baseEmail.$counter.'@example.com';
+                $counter++;
+            }
+
+            $user = User::create([
+                'name' => $this->wisatawan_nama,
+                'email' => $email,
+                'password' => 'password',
+            ]);
+
+            try {
+                $user->assignRole('wisatawan');
+            } catch (\Throwable $e) {
+                // ignore if role not seeded
+            }
+
+            $wisatawan = Wisatawan::create([
+                'user_id' => $user->id,
+                'name' => $this->wisatawan_nama,
+                'status' => 'active',
+            ]);
+
+            $data['wisatawan_id'] = $wisatawan->id;
+            unset($data['wisatawan_nama']);
+        }
 
         Pemesanan::create($data);
         $this->redirectRoute('admin.pemesanan.index');
@@ -69,14 +120,28 @@ new class extends Component {
     <form wire:submit="save" class="mt-6 space-y-4 ui-card">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="ui-label">Wisatawan</label>
-                <select wire:model="wisatawan_id" class="ui-select">
+                <div class="flex items-center justify-between gap-2">
+                    <label class="ui-label">Wisatawan</label>
+                    <label class="inline-flex items-center gap-2 text-xs text-slate-600">
+                        <input type="checkbox" wire:model.live="use_manual_wisatawan" class="rounded border-slate-300">
+                        <span>Input manual</span>
+                    </label>
+                </div>
+                <select wire:model="wisatawan_id" class="ui-select" @if($use_manual_wisatawan) disabled @endif>
                     <option value="">-- pilih --</option>
                     @foreach($wisatawanList as $w)
                         <option value="{{ $w['id'] }}">{{ $w['name'] }}</option>
                     @endforeach
                 </select>
                 @error('wisatawan_id') <div class="ui-error">{{ $message }}</div> @enderror
+
+                @if($use_manual_wisatawan)
+                    <div class="mt-2">
+                        <label class="ui-label text-xs">Nama wisatawan (manual)</label>
+                        <input type="text" wire:model="wisatawan_nama" class="ui-input" />
+                        @error('wisatawan_nama') <div class="ui-error">{{ $message }}</div> @enderror
+                    </div>
+                @endif
             </div>
             <div>
                 <label class="ui-label">Kamar</label>
@@ -126,4 +191,3 @@ new class extends Component {
         </div>
     </form>
 </section>
-
