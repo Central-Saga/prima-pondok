@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // Seed roles, admin, sample rooms + gallery
         $this->call([
             RolePermissionSeeder::class,
+            BankSeeder::class,
             KamarSeeder::class,
             GaleriSeeder::class,
         ]);

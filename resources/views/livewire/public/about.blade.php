@@ -27,18 +27,65 @@ new #[Layout('components.layouts.public')] class extends Component {
     <section class="py-12 sm:py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="rounded-2xl overflow-hidden border bg-slate-50">
-                <div class="relative aspect-[16/9] bg-slate-200 grid place-items-center">
-                    <div class="text-center">
-                        <button type="button" class="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow ring-1 ring-slate-200">
-                            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72L19 12 8 5.14Z"/></svg>
-                        </button>
-                        <div class="text-slate-700 font-medium">{{ __('about.video_title') }}</div>
-                        <div class="text-slate-500 text-sm">{{ __('about.video_subtitle') }}</div>
-                    </div>
+                <div class="relative aspect-video bg-black" data-about-video>
+                    <iframe
+                        class="absolute inset-0 h-full w-full"
+                        src="https://www.youtube-nocookie.com/embed/uBtKIHKExyc?autoplay=1&mute=1&loop=1&playlist=uBtKIHKExyc&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1"
+                        title="{{ __('about.video_title') }}"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                    ></iframe>
+                    <button
+                        type="button"
+                        class="absolute right-3 top-3 z-10 inline-flex items-center rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white/70"
+                        aria-pressed="true"
+                        data-about-video-mute
+                    >
+                        Unmute
+                    </button>
                 </div>
             </div>
         </div>
-        </section>
+    </section>
+
+    <script>
+        (() => {
+            const root = document.querySelector('[data-about-video]');
+            if (!root) return;
+
+            const iframe = root.querySelector('iframe');
+            const button = root.querySelector('[data-about-video-mute]');
+            if (!iframe || !button) return;
+
+            let muted = true;
+
+            const post = (func) => {
+                try {
+                    iframe.contentWindow?.postMessage(
+                        JSON.stringify({ event: 'command', func, args: [] }),
+                        '*'
+                    );
+                } catch {
+                    // no-op
+                }
+            };
+
+            const render = () => {
+                button.textContent = muted ? 'Unmute' : 'Mute';
+                button.setAttribute('aria-pressed', muted ? 'true' : 'false');
+            };
+
+            button.addEventListener('click', () => {
+                muted = !muted;
+                post(muted ? 'mute' : 'unMute');
+                render();
+            });
+
+            render();
+        })();
+    </script>
 
     <!-- Story -->
     <section class="py-12 sm:py-16 bg-slate-50">
@@ -53,10 +100,18 @@ new #[Layout('components.layouts.public')] class extends Component {
                 </p>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <div class="aspect-[4/3] rounded-xl bg-slate-100 border"></div>
-                <div class="aspect-[4/3] rounded-xl bg-slate-100 border"></div>
-                <div class="aspect-[4/3] rounded-xl bg-slate-100 border"></div>
-                <div class="aspect-[4/3] rounded-xl bg-slate-100 border"></div>
+                <div class="aspect-[4/3] rounded-xl bg-slate-100 border overflow-hidden">
+                    <img src="{{ asset('images/PYS08111.JPG') }}" alt="Our story photo 1" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+                </div>
+                <div class="aspect-[4/3] rounded-xl bg-slate-100 border overflow-hidden">
+                    <img src="{{ asset('images/PYS08130.JPG') }}" alt="Our story photo 2" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+                </div>
+                <div class="aspect-[4/3] rounded-xl bg-slate-100 border overflow-hidden">
+                    <img src="{{ asset('images/PYS08172.JPG') }}" alt="Our story photo 3" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+                </div>
+                <div class="aspect-[4/3] rounded-xl bg-slate-100 border overflow-hidden">
+                    <img src="{{ asset('images/PYS08156.JPG') }}" alt="Our story photo 4" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+                </div>
             </div>
         </div>
         </section>

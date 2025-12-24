@@ -1,8 +1,8 @@
 @php
     $title = $title ?? __('landing.contact_section_title');
-    $address = $address ?? \App\Models\Setting::get('contact_address', 'Ubud, Bali — Indonesia');
-    $phone = $phone ?? \App\Models\Setting::get('contact_phone', '+62-812-0000-0000');
-    $email = $email ?? \App\Models\Setting::get('contact_email', 'info@pondokteges.local');
+    $address = $address ?? \App\Models\Setting::get('contact_address', 'Jl. Raya Goa Gajah, Gang Subak Gandalangu X No.1');
+    $phone = $phone ?? \App\Models\Setting::get('contact_phone', '+62 853-3323-8110');
+    $email = $email ?? \App\Models\Setting::get('contact_email', 'pondoktegesubud@gmail.com');
     $mapSrc = $mapSrc ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.753116128303!2d115.27186241092018!3d-8.523333586304394!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd23d785ddd5123%3A0x7ac9e07d60509078!2sPondok%20Teges%20(Bagas)!5e0!3m2!1sen!2sid!4v1761204501018!5m2!1sen!2sid';
     $wa = preg_replace('/\D/','', $phone);
 @endphp
@@ -42,12 +42,7 @@
             </div>
         </div>
         <div class="rounded-xl overflow-hidden border border-white/10 bg-white/5">
-            <iframe
-                src="{{ $mapSrc }}"
-                width="600" height="450" style="border:0;"
-                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                class="w-full h-[320px] sm:h-[380px] lg:h-[450px] block"
-            ></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4908.556189349448!2d115.27647215408598!3d-8.522794026812695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd23d9563d8ed8d%3A0xc1d6ce448170c370!2sPondok%20Teges!5e0!3m2!1sid!2sid!4v1766540089069!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
 </section>
