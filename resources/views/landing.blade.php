@@ -196,19 +196,15 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('landing.gallery_title') }}</h2>
             <div class="mt-8 rounded-2xl bg-white ring-1 ring-slate-100 p-4 sm:p-5">
-                <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     @forelse(($galeri ?? []) as $i => $g)
-                        @php($shapes = ['aspect-[4/3]','aspect-[1/1]','aspect-[3/4]','aspect-[16/9]','aspect-[4/5]','aspect-[5/4]','aspect-[3/2]','aspect-[2/3]'])
-                        @php($shape = $shapes[$i % count($shapes)])
                         @php($p = trim((string)($g->path ?? '')))
                         @continue($p === '')
                         @php($isExternal = \Illuminate\Support\Str::startsWith($p, ['http://','https://']))
-                        <div class="mb-4 break-inside-avoid">
-                            <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer {{ $shape }}">
+                        <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer aspect-[4/3]">
                                 @php($src = $isExternal ? $p : asset('storage/'.$p))
                                 <img src="{{ $src }}" alt="{{ $g->title }}" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                                 <div class="pointer-events-none absolute inset-0 bg-slate-900/0 transition-colors duration-200 group-hover:bg-slate-900/10"></div>
-                            </div>
                         </div>
                     @empty
                         <div class="text-slate-600">{{ __('landing.gallery_none') }}</div>
