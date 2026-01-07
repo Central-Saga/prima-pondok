@@ -1,24 +1,24 @@
-<header data-site-header class="sticky top-0 z-40 bg-white/70 backdrop-blur border-b transition-all duration-300">
+<header data-site-header class="sticky top-0 z-40 bg-slate-950/90 text-white backdrop-blur border-b border-white/10 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 lg:h-24 flex items-center justify-between">
-        <a href="{{ route('home') }}" class="flex items-center gap-3 font-semibold tracking-tight text-slate-900">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-20 w-20 lg:h-24 lg:w-24 object-contain shrink-0 self-center" />
+        <a href="{{ route('home') }}" class="flex items-center gap-3 font-semibold tracking-tight text-white">
+            <img src="{{ asset('images/1.png') }}" alt="Logo" class="h-20 w-20 lg:h-24 lg:w-24 object-contain shrink-0 self-center" />
             <span>{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}</span>
         </a>
         <nav class="flex items-center gap-4">
             @php($onHome = request()->routeIs('home'))
-            <a href="{{ route('kamar.index') }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.rooms') }}</a>
-            <a href="{{ route('about') }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.about') }}</a>
-            <a href="{{ $onHome ? '#galeri' : route('home').'#galeri' }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.gallery') }}</a>
-            <a href="{{ $onHome ? '#kontak' : route('home').'#kontak' }}" class="text-slate-600 hover:text-slate-900">{{ __('nav.contact') }}</a>
+            <a href="{{ route('kamar.index') }}" class="text-white/80 hover:text-white">{{ __('nav.rooms') }}</a>
+            <a href="{{ route('about') }}" class="text-white/80 hover:text-white">{{ __('nav.about') }}</a>
+            <a href="{{ $onHome ? '#galeri' : route('home').'#galeri' }}" class="text-white/80 hover:text-white">{{ __('nav.gallery') }}</a>
+            <a href="{{ $onHome ? '#kontak' : route('home').'#kontak' }}" class="text-white/80 hover:text-white">{{ __('nav.contact') }}</a>
 
-            <div class="flex items-center gap-1 border rounded-full px-1 py-0.5 text-xs">
+            <div class="flex items-center gap-1 border border-white/20 rounded-full px-1 py-0.5 text-xs">
                 @php($locale = app()->getLocale())
                 <a href="{{ route('locale.switch', ['locale' => 'id']) }}"
-                   class="px-2 py-0.5 rounded-full {{ $locale === 'id' ? 'bg-[#00A6F4] text-white' : 'text-slate-600 hover:text-slate-900' }}">
+                   class="px-2 py-0.5 rounded-full {{ $locale === 'id' ? 'bg-[#00A6F4] text-white' : 'text-white/80 hover:text-white' }}">
                     ID
                 </a>
                 <a href="{{ route('locale.switch', ['locale' => 'en']) }}"
-                   class="px-2 py-0.5 rounded-full {{ $locale === 'en' ? 'bg-[#00A6F4] text-white' : 'text-slate-600 hover:text-slate-900' }}">
+                   class="px-2 py-0.5 rounded-full {{ $locale === 'en' ? 'bg-[#00A6F4] text-white' : 'text-white/80 hover:text-white' }}">
                     EN
                 </a>
             </div>
@@ -68,9 +68,7 @@
         const scrolled = window.scrollY > 4;
         header.classList.toggle('shadow-sm', scrolled);
         header.classList.toggle('ring-1', scrolled);
-        header.classList.toggle('ring-sky-100', scrolled);
-        header.classList.toggle('bg-white/80', scrolled);
-        header.classList.toggle('bg-white/70', !scrolled);
+        header.classList.toggle('ring-white/10', scrolled);
       };
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
