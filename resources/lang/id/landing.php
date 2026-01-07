@@ -28,6 +28,11 @@ return [
     'gallery_none' => 'Belum ada foto.',
     'hero_no_image' => 'Tidak ada gambar',
 
+    'reviews_title' => 'Review Pelanggan',
+    'reviews_subtitle' => 'Beberapa pengalaman tamu setelah menginap.',
+    'reviews_cta_rooms' => 'Lihat kamar',
+    'reviews_none' => 'Belum ada review yang ditampilkan.',
+
     'contact_section_title' => 'Kontak',
     'contact_whatsapp' => 'Chat WhatsApp',
 
@@ -35,4 +40,3 @@ return [
     'lightbox_prev' => 'Sebelumnya',
     'lightbox_next' => 'Berikutnya',
 ];
-

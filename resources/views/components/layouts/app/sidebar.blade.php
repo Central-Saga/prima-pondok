@@ -22,6 +22,7 @@
                         <flux:navlist.item icon="banknotes" :href="route('admin.pembayaran')" :current="request()->routeIs('admin.pembayaran')" wire:navigate>Pembayaran</flux:navlist.item>
                         
                         <flux:navlist.item icon="credit-card" :href="route('admin.bank.index')" :current="request()->routeIs('admin.bank.*')" wire:navigate>Bank</flux:navlist.item>
+                        <flux:navlist.item icon="star" :href="route('admin.review.index')" :current="request()->routeIs('admin.review.*')" wire:navigate>Review</flux:navlist.item>
                         {{-- <flux:navlist.item icon="sparkles" :href="route('admin.landing.settings')" :current="request()->routeIs('admin.landing.settings')" wire:navigate>Konten Landing</flux:navlist.item> --}}
                         <flux:navlist.item icon="users" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>Users & Roles</flux:navlist.item>
                     </flux:navlist.group>

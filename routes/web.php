@@ -6,18 +6,25 @@ use Livewire\Volt\Volt;
 use App\Models\Kamar;
 use App\Models\Galeri;
 use App\Models\Setting;
+use App\Models\Review;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     $kamar = Kamar::query()->with('fotos')->where('status', 'available')->latest()->take(6)->get();
     $hasMoreKamar = Kamar::query()->where('status','available')->count() > 6;
     $galeri = Galeri::query()->where('status', 'active')->orderBy('urutan')->take(8)->get();
+    $reviews = Review::query()
+        ->with(['kamar','wisatawan'])
+        ->where('is_published', true)
+        ->latest()
+        ->take(6)
+        ->get();
     $hero_title = Setting::get('hero_title', 'Home Stay Pondok Teges');
     $hero_subtitle = Setting::get('hero_subtitle', 'Rasakan kenyamanan menginap di Ubud.');
     $contact_phone = Setting::get('contact_phone', '+62-812-0000-0000');
     $contact_email = Setting::get('contact_email', 'info@pondokteges.local');
     $contact_address = Setting::get('contact_address', 'Ubud, Bali - Indonesia');
-    return view('landing', compact('kamar', 'galeri', 'hero_title', 'hero_subtitle', 'contact_phone', 'contact_email', 'contact_address', 'hasMoreKamar'));
+    return view('landing', compact('kamar', 'galeri', 'reviews', 'hero_title', 'hero_subtitle', 'contact_phone', 'contact_email', 'contact_address', 'hasMoreKamar'));
 })->name('home');
 
 // Public media route (works even if storage symlink not available on OS)
@@ -90,6 +97,10 @@ Volt::route('admin/pemesanan/{pemesanan}', 'admin.pemesanan.show')->middleware([
 // Admin - Laporan
 Volt::route('admin/laporan', 'admin.laporan.index')->middleware(['auth', 'role:admin'])->name('admin.laporan');
 Volt::route('admin/landing-settings', 'admin.landing-settings')->middleware(['auth', 'role:admin'])->name('admin.landing.settings');
+// Admin - Review pages
+Volt::route('admin/review', 'admin.review.index')->middleware(['auth', 'role:admin'])->name('admin.review.index');
+Volt::route('admin/review/create', 'admin.review.create')->middleware(['auth', 'role:admin'])->name('admin.review.create');
+Volt::route('admin/review/{review}/edit', 'admin.review.edit')->middleware(['auth', 'role:admin'])->name('admin.review.edit');
 // Admin - Users
 Volt::route('admin/users', 'admin.users.index')->middleware(['auth', 'role:admin'])->name('admin.users.index');
 Volt::route('admin/users/create', 'admin.users.create')->middleware(['auth', 'role:admin'])->name('admin.users.create');
@@ -154,6 +165,7 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
 })->name('admin.laporan.export');
 Volt::route('booking/{pemesanan}', 'wisatawan.booking-show')->middleware(['auth', 'role:wisatawan'])->name('booking.show');
 Volt::route('booking', 'wisatawan.booking-index')->middleware(['auth', 'role:wisatawan'])->name('booking.index');
+Volt::route('booking/{pemesanan}/review', 'wisatawan.review-create')->middleware(['auth', 'role:wisatawan'])->name('booking.review');
 // Public kamar listing and detail
 Volt::route('kamar', 'public.kamar-index')->name('kamar.index');
 Volt::route('kamar/{kamar}', 'public.kamar-show')->name('kamar.show');

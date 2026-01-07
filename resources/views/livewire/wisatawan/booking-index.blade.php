@@ -25,7 +25,7 @@ new #[Layout('components.layouts.public')] class extends Component {
             ->whereDoesntHave('pembayaran')
             ->update(['status' => Pemesanan::STATUS_CANCELLED]);
 
-        return Pemesanan::with('kamar')
+        return Pemesanan::with(['kamar','review'])
             ->where('wisatawan_id', $wisatawanId)
             // Sembunyikan pemesanan yang dibatalkan oleh pelanggan dari daftar utama
             ->where('status', '!=', Pemesanan::STATUS_CANCELLED)
@@ -76,7 +76,16 @@ new #[Layout('components.layouts.public')] class extends Component {
                             <td class="py-2 px-3">Rp {{ number_format($row->total_bayar,0,',','.') }}</td>
                             <td class="py-2 px-3"><x-status-badge :status="$row->status" /></td>
                             <td class="py-2 px-3 text-right">
-                                {{-- <a href="{{ route('booking.show', $row->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">Detail</a> --}}
+                                @php
+                                    $eligibleStatus = in_array($row->status, ['confirmed','completed'], true);
+                                    $canReview = $eligibleStatus;
+                                @endphp
+
+                                @if($canReview)
+                                    <a href="{{ route('booking.review', $row->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">
+                                        {{ $row->review ? __('reviews.edit') : __('reviews.write') }}
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                     @empty

@@ -191,6 +191,50 @@
         </div>
     </section>
 
+    <!-- Review -->
+    <section id="review" class="py-16 scroll-mt-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('landing.reviews_title') }}</h2>
+                    <p class="mt-2 text-slate-600">{{ __('landing.reviews_subtitle') }}</p>
+                </div>
+                <a href="{{ route('kamar.index') }}" class="hidden sm:inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+                    {{ __('landing.reviews_cta_rooms') }}
+                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @forelse(($reviews ?? []) as $r)
+                    <div class="group rounded-2xl bg-white ring-1 ring-slate-100 p-5 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 truncate">{{ $r->wisatawan->name ?? 'Pelanggan' }}</div>
+                                <div class="text-xs text-slate-600 truncate">{{ $r->kamar->nama_kamar ?? '-' }}</div>
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0" aria-label="Rating">
+                                @for($i=1; $i<=5; $i++)
+                                    <svg class="h-4 w-4 {{ (int) $r->rating >= $i ? 'text-amber-400' : 'text-slate-200 group-hover:text-slate-300' }}" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 0 0-1.176 0l-2.8 2.034c-.783.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.71c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/>
+                                    </svg>
+                                @endfor
+                            </div>
+                        </div>
+
+                        <p class="mt-4 text-sm text-slate-700 leading-relaxed">
+                            “{{ \Illuminate\Support\Str::limit((string) $r->komentar, 180) }}”
+                        </p>
+                    </div>
+                @empty
+                    <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-700 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                        {{ __('landing.reviews_none') }}
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+
     <!-- Galeri -->
     <section id="galeri" class="py-16 scroll-mt-24 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

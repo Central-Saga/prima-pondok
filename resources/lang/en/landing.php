@@ -28,6 +28,11 @@ return [
     'gallery_none' => 'No photos yet.',
     'hero_no_image' => 'No images available',
 
+    'reviews_title' => 'Customer Reviews',
+    'reviews_subtitle' => 'A few guest experiences after their stay.',
+    'reviews_cta_rooms' => 'View rooms',
+    'reviews_none' => 'No reviews to display yet.',
+
     'contact_section_title' => 'Contact',
     'contact_whatsapp' => 'WhatsApp Chat',
 
@@ -35,4 +40,3 @@ return [
     'lightbox_prev' => 'Previous',
     'lightbox_next' => 'Next',
 ];
-

@@ -46,4 +46,9 @@ class Pemesanan extends Model
     {
         return $this->hasMany(Pembayaran::class);
     }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
 }
