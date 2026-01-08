@@ -5,11 +5,13 @@ use Livewire\Volt\Component;
 
 new class extends Component {
     public string $nama = '';
+    public string $nama_en = '';
 
     public function save(): void
     {
         $data = $this->validate([
             'nama' => 'required|string|max:150',
+            'nama_en' => 'nullable|string|max:150',
         ]);
         Fasilitas::create($data);
         $this->redirectRoute('admin.fasilitas.index');
@@ -28,10 +30,14 @@ new class extends Component {
             <input type="text" wire:model="nama" class="ui-input" />
             @error('nama') <div class="ui-error">{{ $message }}</div> @enderror
         </div>
+        <div>
+            <label class="ui-label">Nama (English)</label>
+            <input type="text" wire:model="nama_en" class="ui-input" />
+            @error('nama_en') <div class="ui-error">{{ $message }}</div> @enderror
+        </div>
         <div class="flex items-center gap-3">
             <button class="ui-btn-primary">Simpan</button>
             <a href="{{ route('admin.fasilitas.index') }}" class="ui-btn-secondary">Batal</a>
         </div>
     </form>
 </section>
-

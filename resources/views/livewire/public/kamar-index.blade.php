@@ -22,7 +22,8 @@ new #[Layout('components.layouts.public')] class extends Component {
                 $q->where(function ($x) use ($term) {
                     $x->where('nama_kamar', 'like', $term)
                       ->orWhere('tipe_kamar', 'like', $term)
-                      ->orWhere('deskripsi', 'like', $term);
+                      ->orWhere('deskripsi', 'like', $term)
+                      ->orWhere('deskripsi_en', 'like', $term);
                 });
             })
             ->orderByDesc('id')

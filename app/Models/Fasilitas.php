@@ -13,7 +13,19 @@ class Fasilitas extends Model
 
     protected $fillable = [
         'nama',
+        'nama_en',
     ];
+
+    public function getNamaAttribute($value): mixed
+    {
+        if (app()->getLocale() === 'en') {
+            $english = $this->getRawOriginal('nama_en');
+
+            return filled($english) ? $english : $value;
+        }
+
+        return $value;
+    }
 
     public function kamars()
     {

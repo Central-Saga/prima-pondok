@@ -13,6 +13,7 @@ new class extends Component {
     public ?string $tipe_kamar = null;
     public float $harga = 0.0;
     public ?string $deskripsi = null;
+    public ?string $deskripsi_en = null;
     public string $status = 'available';
     public array $images = [];
     public array $newImages = [];
@@ -31,6 +32,7 @@ new class extends Component {
             'tipe_kamar' => 'nullable|string|max:100',
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
+            'deskripsi_en' => 'nullable|string',
             'status' => 'required|string',
             'images' => 'array|max:10',
             // Naikkan batas ukuran per file ke 25MB (25600 KB)
@@ -120,6 +122,10 @@ new class extends Component {
         <div class="sm:col-span-2">
             <label class="ui-label">Deskripsi Kamar</label>
             <textarea wire:model="deskripsi" rows="3" class="ui-textarea"></textarea>
+        </div>
+        <div class="sm:col-span-2">
+            <label class="ui-label">Deskripsi Kamar (English)</label>
+            <textarea wire:model="deskripsi_en" rows="3" class="ui-textarea"></textarea>
         </div>
         <div class="sm:col-span-2">
             <label class="ui-label">Foto Kamar (boleh lebih dari satu)</label>

@@ -16,12 +16,24 @@ class Kamar extends Model
         'tipe_kamar',
         'harga',
         'deskripsi',
+        'deskripsi_en',
         'status',
     ];
 
     protected $casts = [
         'harga' => 'decimal:2',
     ];
+
+    public function getDeskripsiAttribute($value): mixed
+    {
+        if (app()->getLocale() === 'en') {
+            $english = $this->getRawOriginal('deskripsi_en');
+
+            return filled($english) ? $english : $value;
+        }
+
+        return $value;
+    }
 
     public function pemesanan()
     {
