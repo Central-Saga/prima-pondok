@@ -12,10 +12,13 @@ new #[Layout('components.layouts.public')] class extends Component {
     use WithFileUploads;
 
     public Pemesanan $pemesanan;
+    public ?Pembayaran $pembayaranTerakhir = null;
     public ?string $metode_bayar = 'transfer';
     public ?float $jumlah = null;
     public $bukti; // file
     public array $banks = [];
+    public string $paymentInfo = '';
+    public bool $canUploadProof = true;
 
     public function mount(Pemesanan $pemesanan): void
     {
@@ -25,10 +28,62 @@ new #[Layout('components.layouts.public')] class extends Component {
         $this->pemesanan = $pemesanan;
         $this->jumlah = (float) $pemesanan->total_bayar;
         $this->banks = Bank::query()->where('status','active')->orderBy('nama_bank')->get(['nama_bank','no_transfer'])->toArray();
+
+        $this->pembayaranTerakhir = Pembayaran::query()
+            ->where('pemesanan_id', $this->pemesanan->id)
+            ->latest('id')
+            ->first();
+
+        if (
+            $this->pembayaranTerakhir
+            && $this->pemesanan->status === Pemesanan::STATUS_CANCELLED
+            && in_array($this->pembayaranTerakhir->status, [Pembayaran::STATUS_PENDING, Pembayaran::STATUS_REJECTED], true)
+        ) {
+            $this->pemesanan->update(['status' => Pemesanan::STATUS_PENDING]);
+        }
+
+        $this->syncPaymentState();
+    }
+
+    private function syncPaymentState(): void
+    {
+        $this->paymentInfo = '';
+        $this->canUploadProof = true;
+
+        if (! $this->pembayaranTerakhir) {
+            return;
+        }
+
+        if ($this->pembayaranTerakhir->status === Pembayaran::STATUS_VERIFIED) {
+            $this->paymentInfo = __('booking.payment_status_verified');
+            $this->canUploadProof = false;
+            return;
+        }
+
+        if ($this->pembayaranTerakhir->status === Pembayaran::STATUS_PENDING) {
+            $this->paymentInfo = __('booking.payment_status_pending');
+            $this->canUploadProof = false;
+            return;
+        }
+
+        if ($this->pembayaranTerakhir->status === Pembayaran::STATUS_REJECTED) {
+            $this->paymentInfo = __('booking.payment_status_rejected');
+            $this->canUploadProof = true;
+        }
     }
 
     public function cancel(): void
     {
+        $lastPayment = Pembayaran::query()
+            ->where('pemesanan_id', $this->pemesanan->id)
+            ->latest('id')
+            ->first();
+
+        if ($lastPayment && in_array($lastPayment->status, [Pembayaran::STATUS_PENDING, Pembayaran::STATUS_VERIFIED], true)) {
+            $this->addError('bukti', __('booking.payment_cannot_cancel'));
+            return;
+        }
+
         if ($this->pemesanan->status === Pemesanan::STATUS_PENDING) {
             $this->pemesanan->update(['status' => Pemesanan::STATUS_CANCELLED]);
         }
@@ -38,6 +93,17 @@ new #[Layout('components.layouts.public')] class extends Component {
 
     public function submit(): void
     {
+        $this->pembayaranTerakhir = Pembayaran::query()
+            ->where('pemesanan_id', $this->pemesanan->id)
+            ->latest('id')
+            ->first();
+        $this->syncPaymentState();
+
+        if (! $this->canUploadProof) {
+            $this->addError('bukti', __('booking.payment_cannot_upload'));
+            return;
+        }
+
         $this->validate([
             'metode_bayar' => 'required|string',
             'jumlah' => 'required|numeric|min:0',
@@ -47,15 +113,30 @@ new #[Layout('components.layouts.public')] class extends Component {
         $path = $this->bukti->store('bukti', 'public');
         $path = str_replace('\\', '/', $path);
 
-        Pembayaran::create([
-            'pemesanan_id' => $this->pemesanan->id,
-            'metode_bayar' => $this->metode_bayar,
-            'jumlah' => $this->jumlah,
-            'bukti_pembayaran' => $path,
-            'status' => Pembayaran::STATUS_PENDING,
-        ]);
+        if ($this->pembayaranTerakhir && $this->pembayaranTerakhir->status === Pembayaran::STATUS_REJECTED) {
+            $this->pembayaranTerakhir->update([
+                'metode_bayar' => $this->metode_bayar,
+                'jumlah' => $this->jumlah,
+                'bukti_pembayaran' => $path,
+                'status' => Pembayaran::STATUS_PENDING,
+                'alasan_penolakan' => null,
+            ]);
+        } else {
+            Pembayaran::create([
+                'pemesanan_id' => $this->pemesanan->id,
+                'metode_bayar' => $this->metode_bayar,
+                'jumlah' => $this->jumlah,
+                'bukti_pembayaran' => $path,
+                'status' => Pembayaran::STATUS_PENDING,
+                'alasan_penolakan' => null,
+            ]);
+        }
 
-        $this->redirectRoute('home');
+        if (in_array($this->pemesanan->status, [Pemesanan::STATUS_PENDING, Pemesanan::STATUS_CANCELLED], true)) {
+            $this->pemesanan->update(['status' => Pemesanan::STATUS_PENDING]);
+        }
+
+        $this->redirectRoute('booking.show', $this->pemesanan->id);
     }
 }; ?>
 
@@ -66,13 +147,12 @@ new #[Layout('components.layouts.public')] class extends Component {
                 <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900">{{ __('booking.detail_title') }}</h1>
                 <p class="mt-1 text-sm text-slate-600">{{ __('booking.detail_subtitle') }}</p>
             </div>
-            <button
-                type="button"
-                wire:click="cancel"
+            <a
+                href="{{ route('booking.index') }}"
                 class="hidden sm:inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
             >
                 {{ __('booking.back') }}
-            </button>
+            </a>
         </div>
 
         <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -117,9 +197,26 @@ new #[Layout('components.layouts.public')] class extends Component {
                     <p class="mt-1 text-sm text-slate-600">{{ __('booking.confirm_payment_subtitle') }}</p>
 
                     <form wire:submit="submit" class="mt-4 space-y-4 text-sm">
+                        @if($pembayaranTerakhir)
+                            <div class="rounded-lg border p-3 text-sm
+                                {{ $pembayaranTerakhir->status === 'verified' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : '' }}
+                                {{ $pembayaranTerakhir->status === 'pending' ? 'border-amber-200 bg-amber-50 text-amber-800' : '' }}
+                                {{ $pembayaranTerakhir->status === 'rejected' ? 'border-rose-200 bg-rose-50 text-rose-800' : '' }}
+                            ">
+                                <div class="font-medium">{{ $paymentInfo }}</div>
+                                @if($pembayaranTerakhir->status === 'rejected' && filled($pembayaranTerakhir->alasan_penolakan))
+                                    <div class="mt-2">
+                                        <div class="text-xs font-semibold text-rose-900">{{ __('booking.payment_reject_reason_label') }}</div>
+                                        <div class="mt-1 whitespace-pre-line text-sm">{{ $pembayaranTerakhir->alasan_penolakan }}</div>
+                                    </div>
+                                    <div class="mt-2 text-xs text-rose-700">{{ __('booking.payment_reupload_note') }}</div>
+                                @endif
+                            </div>
+                        @endif
+
                         <div>
                             <label class="ui-label">{{ __('booking.method') }}</label>
-                            <select wire:model="metode_bayar" class="ui-select">
+                            <select wire:model="metode_bayar" class="ui-select" @disabled(! $canUploadProof)>
                                 <option value="transfer">{{ __('booking.bank_transfer') }}</option>
                                 <option value="tunai">{{ __('booking.cash') }}</option>
                             </select>
@@ -143,13 +240,13 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <input type="hidden" wire:model="jumlah" />
                         <div>
                             <label class="ui-label">{{ __('booking.payment_proof') }}</label>
-                            <input type="file" wire:model="bukti" class="ui-input file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100" />
+                            <input type="file" wire:model="bukti" class="ui-input file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100" @disabled(! $canUploadProof) />
                             @error('bukti') <div class="ui-error">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="pt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                            <button class="ui-btn-primary w-full sm:w-auto">{{ __('booking.submit_proof') }}</button>
-                            <button type="button" wire:click="cancel" class="mt-2 sm:mt-0 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+                            <button class="ui-btn-primary w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed" @disabled(! $canUploadProof)>{{ __('booking.submit_proof') }}</button>
+                            <button type="button" wire:click="cancel" class="mt-2 sm:mt-0 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed" @disabled(! $canUploadProof)>
                                 {{ __('booking.cancel') }}
                             </button>
                         </div>

@@ -145,10 +145,9 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
 
     $callback = function () use ($rows) {
         $out = fopen('php://output', 'w');
-        fputcsv($out, ['ID','Wisatawan','Kamar','Checkin','Checkout','Malam','Total','Status']);
+        fputcsv($out, ['Wisatawan','Kamar','Checkin','Checkout','Malam','Total','Status']);
         foreach ($rows as $r) {
             fputcsv($out, [
-                $r->id,
                 optional($r->wisatawan)->name,
                 optional($r->kamar)->nama_kamar,
                 optional($r->tanggal_checkin)?->format('Y-m-d'),
@@ -166,6 +165,9 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
 Volt::route('booking/{pemesanan}', 'wisatawan.booking-show')->middleware(['auth', 'role:wisatawan'])->name('booking.show');
 Volt::route('booking', 'wisatawan.booking-index')->middleware(['auth', 'role:wisatawan'])->name('booking.index');
 Volt::route('booking/{pemesanan}/review', 'wisatawan.review-create')->middleware(['auth', 'role:wisatawan'])->name('booking.review');
+Volt::route('booking/{pemesanan}/print', 'wisatawan.booking-print')->middleware(['auth', 'role:wisatawan'])->name('booking.print');
+Volt::route('akun/profil', 'wisatawan.profile')->middleware(['auth', 'role:wisatawan'])->name('wisatawan.profile');
+Volt::route('akun/password', 'wisatawan.password')->middleware(['auth', 'role:wisatawan'])->name('wisatawan.password');
 // Public kamar listing and detail
 Volt::route('kamar', 'public.kamar-index')->name('kamar.index');
 Volt::route('kamar/{kamar}', 'public.kamar-show')->name('kamar.show');

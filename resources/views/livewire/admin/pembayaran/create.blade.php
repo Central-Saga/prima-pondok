@@ -15,6 +15,7 @@ new class extends Component {
     public float $jumlah = 0.0;
     public $bukti; // file optional
     public string $status = Pembayaran::STATUS_PENDING;
+    public ?string $alasan_penolakan = null;
 
     public function mount(): void
     {
@@ -26,12 +27,17 @@ new class extends Component {
 
     public function save(): void
     {
+        $reasonRule = $this->status === Pembayaran::STATUS_REJECTED
+            ? 'required|string|max:500'
+            : 'nullable|string|max:500';
+
         $data = $this->validate([
             'pemesanan_id' => 'required|exists:pemesanan,id',
             'metode_bayar' => 'required|string',
             'jumlah' => 'required|numeric|min:0',
             'status' => 'required|string',
             'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
+            'alasan_penolakan' => $reasonRule,
         ]);
 
         $path = null;
@@ -45,6 +51,7 @@ new class extends Component {
             'jumlah' => $this->jumlah,
             'bukti_pembayaran' => $path,
             'status' => $this->status,
+            'alasan_penolakan' => $this->status === Pembayaran::STATUS_REJECTED ? $this->alasan_penolakan : null,
         ]);
 
         $this->redirectRoute('admin.pembayaran');
@@ -93,10 +100,16 @@ new class extends Component {
                 <option value="rejected">rejected</option>
             </select>
         </div>
+        @if($status === 'rejected')
+            <div>
+                <label class="ui-label">Alasan reject</label>
+                <textarea wire:model="alasan_penolakan" rows="3" class="ui-input" placeholder="Contoh: Bukti transfer tidak jelas / nominal tidak sesuai / rekening tujuan salah."></textarea>
+                @error('alasan_penolakan') <div class="ui-error">{{ $message }}</div> @enderror
+            </div>
+        @endif
         <div class="flex items-center gap-3">
             <button class="ui-btn-primary">Simpan</button>
             <a href="{{ route('admin.pembayaran') }}" class="ui-btn-secondary">Batal</a>
         </div>
     </form>
 </section>
-

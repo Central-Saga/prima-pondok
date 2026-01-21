@@ -51,8 +51,8 @@ new class extends Component {
             <p class="mt-1 text-slate-600 text-sm">Kelola review pelanggan dan tentukan yang tampil di landing page.</p>
         </div>
         <div class="flex items-center gap-3">
-            <input type="text" wire:model.live.debounce.800ms="q" placeholder="Cari kamar/nama/komentar/#booking..." class="ui-input w-64" />
-            <select wire:model="status" class="ui-select w-40">
+            <input type="text" wire:model.live.debounce.1000ms="q" placeholder="Cari kamar/nama/komentar/#booking..." class="ui-input w-64" />
+            <select wire:model.live.debounce.1000ms="status" class="ui-select w-40">
                 <option value="all">Semua</option>
                 <option value="published">Tampil</option>
                 <option value="hidden">Tersembunyi</option>
@@ -107,4 +107,3 @@ new class extends Component {
         {{ $this->items->links() }}
     </div>
 </section>
-

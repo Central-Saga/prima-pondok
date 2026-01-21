@@ -18,16 +18,16 @@ new #[Layout('components.layouts.public')] class extends Component {
         $user = Auth::user();
         $wisatawanId = $user?->wisatawan?->id;
 
-        // Anggap semua pemesanan pending tanpa pembayaran sebagai hangus
-        // ketika pelanggan kembali melihat daftar booking (misalnya lewat tombol back browser)
+        // Jika sudah ada pembayaran (pending/rejected), pastikan status booking tidak tetap "cancelled"
         Pemesanan::where('wisatawan_id', $wisatawanId)
-            ->where('status', Pemesanan::STATUS_PENDING)
-            ->whereDoesntHave('pembayaran')
-            ->update(['status' => Pemesanan::STATUS_CANCELLED]);
+            ->where('status', Pemesanan::STATUS_CANCELLED)
+            ->whereHas('pembayaran', function ($q) {
+                $q->whereIn('status', ['pending', 'rejected']);
+            })
+            ->update(['status' => Pemesanan::STATUS_PENDING]);
 
         return Pemesanan::with(['kamar','review'])
             ->where('wisatawan_id', $wisatawanId)
-            // Sembunyikan pemesanan yang dibatalkan oleh pelanggan dari daftar utama
             ->where('status', '!=', Pemesanan::STATUS_CANCELLED)
             ->when($this->status !== 'all', fn($q) => $q->where('status',$this->status))
             ->latest()
@@ -43,11 +43,10 @@ new #[Layout('components.layouts.public')] class extends Component {
                 <p class="mt-1 text-sm text-slate-600">{{ __('booking.history_subtitle') }}</p>
             </div>
             <div class="flex items-center gap-3">
-                <select wire:model="status" class="ui-select w-40">
+                <select wire:model.live.debounce.1000ms="status" class="ui-select w-40">
                     <option value="all">{{ __('booking.filter_all') }}</option>
                     <option value="pending">{{ __('booking.filter_pending') }}</option>
                     <option value="confirmed">{{ __('booking.filter_confirmed') }}</option>
-                    <option value="cancelled">{{ __('booking.filter_cancelled') }}</option>
                     <option value="completed">{{ __('booking.filter_completed') }}</option>
                 </select>
             </div>
@@ -81,10 +80,28 @@ new #[Layout('components.layouts.public')] class extends Component {
                                     $canReview = $eligibleStatus;
                                 @endphp
 
-                                @if($canReview)
-                                    <a href="{{ route('booking.review', $row->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">
-                                        {{ $row->review ? __('reviews.edit') : __('reviews.write') }}
+                                @if(! $eligibleStatus)
+                                    <a href="{{ route('booking.show', $row->id) }}" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+                                        {{ __('booking.view_detail') }}
                                     </a>
+                                @endif
+
+                                @if($eligibleStatus)
+                                    <a href="{{ route('booking.print', $row->id) }}" target="_blank" rel="noopener" class="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-50">
+                                        {{ __('booking.print_proof') }}
+                                    </a>
+                                @endif
+
+                                @if($canReview)
+                                    @if($row->review)
+                                        <span class="{{ (! $eligibleStatus && ! empty($row->review)) ? 'ml-2' : '' }} inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200 bg-emerald-50">
+                                            {{ __('reviews.thanks') }}
+                                        </span>
+                                    @else
+                                        <a href="{{ route('booking.review', $row->id) }}" class="{{ ! $eligibleStatus ? 'ml-2' : '' }} inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200 hover:bg-sky-50">
+                                            {{ __('reviews.write') }}
+                                        </a>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

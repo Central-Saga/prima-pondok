@@ -22,6 +22,8 @@ new class extends Component {
 
     <div class="mt-6">
         <a href="{{ route('kamar.index') }}" class="inline-flex items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Cari Kamar</a>
+        <a href="{{ route('wisatawan.profile') }}" class="ml-2 inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Profil</a>
+        <a href="{{ route('wisatawan.password') }}" class="ml-2 inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Ganti Password</a>
     </div>
 
     <div class="mt-8">
@@ -36,7 +38,7 @@ new class extends Component {
                     <div class="text-right">
                         <div class="text-sm font-semibold">Rp {{ number_format($p->total_bayar,0,',','.') }}</div>
                         <div class="mt-1"><x-status-badge :status="$p->status" /></div>
-                        <a href="{{ route('booking.show', $p->id) }}" class="block mt-2 text-xs text-sky-700 hover:underline">Lihat / Bayar</a>
+                        <a href="{{ route('booking.show', $p->id) }}" class="block mt-2 text-xs text-sky-700 hover:underline">{{ __('booking.view_detail') }}</a>
                     </div>
                 </div>
             @empty

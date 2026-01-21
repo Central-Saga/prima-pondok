@@ -38,7 +38,7 @@ new class extends Component {
         </div>
         <div class="flex items-center gap-3">
             <input type="text" wire:model.live.debounce.1000ms="q" placeholder="Cari..." class="ui-input w-52" />
-            <select wire:model="status" class="ui-select w-40">
+            <select wire:model.live.debounce.1000ms="status" class="ui-select w-40">
                 <option value="all">Semua</option>
                 <option value="active">Active</option>
                 <option value="hidden">Hidden</option>

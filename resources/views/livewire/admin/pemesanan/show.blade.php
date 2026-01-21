@@ -84,22 +84,18 @@ new class extends Component {
                 @forelse($pemesanan->pembayaran as $pay)
                     <div class="mt-2 text-sm flex items-center justify-between">
                         <div>
-                            <div class="font-medium">{{ $pay->metode_bayar }} — Rp {{ number_format($pay->jumlah,0,',','.') }}</div>
+                            <div class="font-medium">{{ $pay->metode_bayar }} - Rp {{ number_format($pay->jumlah,0,',','.') }}</div>
                             <div class="text-slate-600 text-xs capitalize">Status: {{ $pay->status }}</div>
-                        </div>
-                        <div>
-                            @if(\Illuminate\Support\Str::startsWith($pay->bukti_pembayaran, ['http://','https://']))
-                                <a href="{{ $pay->bukti_pembayaran }}" target="_blank" class="text-sky-700 hover:underline text-xs">Bukti</a>
-                            @else
-                                <a href="{{ asset('storage/'.$pay->bukti_pembayaran) }}" target="_blank" class="text-sky-700 hover:underline text-xs">Bukti</a>
-                            @endif
                         </div>
                     </div>
                 @empty
                     <div class="mt-2 ui-help">Belum ada data pembayaran.</div>
                 @endforelse
+
+                <div class="mt-3 text-xs text-slate-500">
+                    Bukti pembayaran hanya dapat dibuka melalui menu <a href="{{ route('admin.pembayaran') }}" class="text-sky-700 hover:underline">Pembayaran</a>.
+                </div>
             </div>
         </div>
     </div>
 </section>
-
