@@ -21,6 +21,19 @@ return [
     'payment_proof' => 'Payment Proof',
     'submit_proof' => 'Submit Proof',
     'cancel' => 'Cancel',
+    'payment_status_pending' => 'Payment proof received. Waiting for admin verification.',
+    'payment_status_verified' => 'Payment verified. Thank you!',
+    'payment_status_rejected' => 'Payment was rejected. Please re-upload your payment proof.',
+    'payment_reject_reason_label' => 'Rejection reason',
+    'payment_reupload_note' => 'If the issue is only with the transfer proof, you can simply re-upload the proof.',
+    'payment_cannot_upload' => 'You cannot upload payment proof at this time.',
+    'payment_cannot_cancel' => 'You cannot cancel this booking while it is awaiting admin verification.',
+    'print_proof' => 'Print Proof',
+    'print_title' => 'Booking Proof',
+    'print_subtitle' => 'Show this proof at check-in.',
+    'print_note' => 'Keep this proof. If needed, staff can verify the booking code in the system.',
+    'print_footer' => 'This document is generated automatically by the system.',
+    'guest_name' => 'Guest Name',
 
     // Booking index (history)
     'history_title' => 'Booking History',
@@ -34,4 +47,5 @@ return [
     'total_header' => 'Total',
     'status_header' => 'Status',
     'no_bookings' => 'No bookings yet.',
+    'view_detail' => 'Details',
 ];

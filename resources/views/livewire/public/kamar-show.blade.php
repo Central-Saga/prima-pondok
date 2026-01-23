@@ -17,10 +17,20 @@ new #[Layout('components.layouts.public')] class extends Component {
     public float $total_bayar = 0.0;
     public string $messageText = '';
 
+    private function statusMessage(): string
+    {
+        return match (strtolower((string) $this->kamar->status)) {
+            'maintenance' => __('rooms.error_room_maintenance'),
+            'unavailable' => __('rooms.error_room_unavailable'),
+            default => '',
+        };
+    }
+
     public function mount(Kamar $kamar): void
     {
         $this->kamar = $kamar->load(['fotos','fasilitas']);
         $this->activeIndex = 0;
+        $this->messageText = $this->statusMessage();
     }
 
     public function updated($field): void
@@ -32,9 +42,12 @@ new #[Layout('components.layouts.public')] class extends Component {
 
     private function recalc(): void
     {
-        $this->messageText = '';
+        $this->messageText = $this->statusMessage();
         $this->jumlah_hari = 1;
         $this->total_bayar = 0;
+        if ($this->messageText) {
+            return;
+        }
         if (! $this->tanggal_checkin || ! $this->tanggal_checkout) {
             return;
         }
@@ -66,6 +79,12 @@ new #[Layout('components.layouts.public')] class extends Component {
 
     public function pesan(): void
     {
+        $this->messageText = $this->statusMessage();
+        if ($this->messageText) {
+            $this->addError('tanggal_checkin', $this->messageText);
+            return;
+        }
+
         $this->validate([
             'tanggal_checkin' => 'required|date',
             'tanggal_checkout' => 'required|date|after:tanggal_checkin',
@@ -184,6 +203,7 @@ new #[Layout('components.layouts.public')] class extends Component {
 
             <!-- Booking card on the right, sticky on large screens -->
             <div class="lg:col-span-5">
+                @php($bookingDisabled = strtolower((string) $kamar->status) !== 'available')
                 <div id="booking" class="mt-2 lg:mt-0 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm lg:sticky lg:top-24">
                     <h3 class="text-lg font-semibold text-slate-900">{{ __('rooms.book_card_title') }}</h3>
                     <p class="mt-1 text-sm text-slate-600">{{ __('rooms.book_card_subtitle') }}</p>
@@ -191,12 +211,12 @@ new #[Layout('components.layouts.public')] class extends Component {
                     <form wire:submit="pesan" class="mt-4 space-y-4">
                         <div>
                             <label class="ui-label">{{ __('rooms.checkin_label') }}</label>
-                            <input type="date" min="{{ now()->toDateString() }}" wire:model.live.debounce.1000ms="tanggal_checkin" class="ui-input" />
+                            <input type="date" min="{{ now()->toDateString() }}" wire:model.live.debounce.1000ms="tanggal_checkin" class="ui-input" @disabled($bookingDisabled) />
                             @error('tanggal_checkin') <div class="ui-error">{{ $message }}</div> @enderror
                         </div>
                         <div>
                             <label class="ui-label">{{ __('rooms.checkout_label') }}</label>
-                            <input type="date" @if($tanggal_checkin) min="{{ \Carbon\Carbon::parse($tanggal_checkin)->addDay()->toDateString() }}" @endif wire:model.live.debounce.1000ms="tanggal_checkout" class="ui-input" />
+                            <input type="date" @if($tanggal_checkin) min="{{ \Carbon\Carbon::parse($tanggal_checkin)->addDay()->toDateString() }}" @endif wire:model.live.debounce.1000ms="tanggal_checkout" class="ui-input" @disabled($bookingDisabled) />
                             @error('tanggal_checkout') <div class="ui-error">{{ $message }}</div> @enderror
                         </div>
 
@@ -210,7 +230,7 @@ new #[Layout('components.layouts.public')] class extends Component {
                         </div>
 
                         <div class="pt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                            <button class="ui-btn-primary w-full sm:w-auto">{{ __('rooms.book_now') }}</button>
+                            <button class="ui-btn-primary w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed" @disabled($bookingDisabled)>{{ __('rooms.book_now') }}</button>
                             <a href="{{ route('home') }}" class="mt-2 sm:mt-0 ui-btn-secondary">{{ __('rooms.back_button') }}</a>
                             @php($wa = preg_replace('/\D/','', Setting::get('contact_phone','+62')))
                             @php($msg = rawurlencode((app()->getLocale() === 'en'

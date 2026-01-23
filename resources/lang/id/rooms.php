@@ -2,14 +2,14 @@
 
 return [
     'list_title' => 'Semua Kamar',
-    'list_subtitle' => 'Pilih kamar yang tersedia lalu lanjut ke detail untuk memesan.',
+    'list_subtitle' => 'Lihat semua kamar dan cek statusnya, lalu lanjut ke detail untuk memesan.',
     'search_placeholder' => 'Cari kamar atau tipe...',
     'back_home' => 'Kembali',
     'no_photo' => 'Foto',
     'default_type' => 'Tipe Standar',
     'price_suffix' => '/malam',
     'view_detail' => 'Lihat Detail',
-    'no_rooms' => 'Belum ada kamar tersedia.',
+    'no_rooms' => 'Belum ada kamar.',
 
     'type_label' => 'Tipe:',
     'type_default' => 'Standar',
@@ -29,5 +29,6 @@ return [
 
     'error_checkout_after_checkin' => 'Tanggal checkout harus setelah checkin',
     'error_not_available' => 'Kamar tidak tersedia pada tanggal tersebut',
+    'error_room_maintenance' => 'Kamar sedang maintenance dan belum bisa dipesan',
+    'error_room_unavailable' => 'Kamar sedang tidak tersedia dan belum bisa dipesan',
 ];
-

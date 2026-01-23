@@ -16,7 +16,7 @@ new #[Layout('components.layouts.public')] class extends Component {
     {
         return Kamar::query()
             ->with('fotos')
-            ->where('status', 'available')
+            ->whereIn('status', ['available', 'maintenance', 'unavailable'])
             ->when($this->q !== '', function ($q) {
                 $term = '%'.$this->q.'%';
                 $q->where(function ($x) use ($term) {

@@ -2,14 +2,14 @@
 
 return [
     'list_title' => 'All Rooms',
-    'list_subtitle' => 'Choose an available room and continue to details to book.',
+    'list_subtitle' => 'Browse all rooms, check their status, then continue to details to book.',
     'search_placeholder' => 'Search room or type...',
     'back_home' => 'Back',
     'no_photo' => 'Photo',
     'default_type' => 'Standard Type',
     'price_suffix' => '/night',
     'view_detail' => 'View Details',
-    'no_rooms' => 'No rooms available yet.',
+    'no_rooms' => 'No rooms found.',
 
     'type_label' => 'Type:',
     'type_default' => 'Standard',
@@ -29,5 +29,6 @@ return [
 
     'error_checkout_after_checkin' => 'Check-out date must be after check-in date',
     'error_not_available' => 'The room is not available on those dates',
+    'error_room_maintenance' => 'This room is under maintenance and cannot be booked yet',
+    'error_room_unavailable' => 'This room is currently unavailable and cannot be booked yet',
 ];
-

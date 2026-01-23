@@ -10,6 +10,8 @@ new class extends Component {
     public int $pemesananCount = 0;
     public int $pembayaranPending = 0; // kept for possible future use
     public float $totalRevenue = 0.0;
+    public int $pendingBookingCount = 0;
+    public array $pendingBookingItems = [];
     public int $month = 0;
     public int $year = 0;
     public array $monthOptions = [];
@@ -36,6 +38,7 @@ new class extends Component {
 
         $this->kamarCount = Kamar::count();
         $this->refreshData();
+        $this->refreshNotifications();
     }
 
     public function updated($field): void
@@ -91,6 +94,32 @@ new class extends Component {
             'period'   => ($this->monthOptions[$this->month] ?? (string) $this->month) . ' ' . $this->year,
         ]);
     }
+
+    public function refreshNotifications(): void
+    {
+        $this->pendingBookingCount = Pemesanan::query()
+            ->where('status', Pemesanan::STATUS_PENDING)
+            ->count();
+
+        $this->pendingBookingItems = Pemesanan::query()
+            ->with([
+                'kamar:id,nama_kamar',
+                'wisatawan:id,name',
+            ])
+            ->where('status', Pemesanan::STATUS_PENDING)
+            ->orderByDesc('id')
+            ->take(5)
+            ->get()
+            ->map(fn (Pemesanan $p) => [
+                'id' => $p->id,
+                'kamar' => $p->kamar?->nama_kamar ?? '-',
+                'wisatawan' => $p->wisatawan?->name ?? '-',
+                'checkin' => optional($p->tanggal_checkin)->format('d M Y'),
+                'checkout' => optional($p->tanggal_checkout)->format('d M Y'),
+                'created_human' => optional($p->created_at)->diffForHumans(),
+            ])
+            ->toArray();
+    }
 }; ?>
 
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -99,7 +128,7 @@ new class extends Component {
             <h1 class="text-2xl font-semibold text-slate-900">Dashboard</h1>
             <p class="mt-1 text-slate-600">Ringkasan singkat operasional Pondok Teges.</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2" wire:poll.3s="refreshNotifications">
             <select wire:model.live.debounce.1000ms="month" class="ui-select w-auto min-w-[150px]">
                 @foreach($monthOptions as $mVal => $mName)
                     <option value="{{ $mVal }}">{{ $mName }}</option>
@@ -111,6 +140,51 @@ new class extends Component {
                 @endforeach
             </select>
             <a href="{{ route('admin.laporan.export', ['from' => \Carbon\Carbon::create($year,$month,1)->startOfMonth()->format('Y-m-d'), 'to' => \Carbon\Carbon::create($year,$month,1)->endOfMonth()->format('Y-m-d')]) }}" class="ui-btn-secondary whitespace-nowrap">Export CSV</a>
+
+            <details class="relative">
+                <summary class="list-none cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-sm hover:bg-slate-50">
+                    <span class="relative inline-flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9A6 6 0 0 0 6 9v.05-.05v.7a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                        </svg>
+                        @if($pendingBookingCount > 0)
+                            <span class="absolute -right-2 -top-2 inline-flex min-w-5 items-center justify-center rounded-full bg-rose-600 px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white">
+                                {{ $pendingBookingCount > 99 ? '99+' : $pendingBookingCount }}
+                            </span>
+                        @endif
+                    </span>
+                </summary>
+
+                <div class="absolute right-0 z-20 mt-2 w-[360px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+                    <div class="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
+                        <div class="text-sm font-semibold text-slate-900">Notifikasi Pemesanan</div>
+                        <a href="{{ route('admin.pemesanan.index') }}" class="text-xs font-medium text-sky-700 hover:text-sky-800">Lihat semua</a>
+                    </div>
+
+                    <div class="max-h-80 overflow-auto">
+                        @if(empty($pendingBookingItems))
+                            <div class="px-4 py-4 text-sm text-slate-600">Tidak ada pemesanan pending.</div>
+                        @else
+                            <ul class="divide-y divide-slate-100">
+                                @foreach($pendingBookingItems as $n)
+                                    <li>
+                                        <a href="{{ route('admin.pemesanan.show', $n['id']) }}" class="block px-4 py-3 hover:bg-slate-50">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <div class="text-sm font-medium text-slate-900 truncate">#{{ $n['id'] }} · {{ $n['wisatawan'] }}</div>
+                                                    <div class="mt-0.5 text-xs text-slate-600 truncate">{{ $n['kamar'] }}</div>
+                                                    <div class="mt-1 text-xs text-slate-500">{{ $n['checkin'] }} → {{ $n['checkout'] }}</div>
+                                                </div>
+                                                <div class="text-[11px] text-slate-500 whitespace-nowrap">{{ $n['created_human'] }}</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
+            </details>
         </div>
     </div>
 
@@ -241,7 +315,7 @@ new class extends Component {
         </div> --}}
     </div>
 
-    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div wire:ignore id="dashboard-charts" class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
             <div class="text-slate-900 font-medium">Tren Booking (<span id="title-booking">{{ $monthOptions[$month] ?? $month }} {{ $year }}</span>)</div>
             <div class="mt-3" style="height:220px">
@@ -262,6 +336,7 @@ new class extends Component {
         </div>
     </div>
 
+    @once
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
     <script>
         function setupDashboardCharts() {
@@ -478,4 +553,5 @@ new class extends Component {
             if (el) ro.observe(el);
         })();
     </script>
+    @endonce
 </section>

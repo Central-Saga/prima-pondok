@@ -17,5 +17,5 @@ return [
 
     'write' => 'Write Review',
     'edit' => 'Edit Review',
+    'thanks' => 'Thanks for your review.',
 ];
-

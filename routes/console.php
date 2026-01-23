@@ -14,8 +14,17 @@ Artisan::command('bookings:expire-pending', function () {
     $cutoff = Carbon::now()->subHours(max(1, $hours));
 
     $expired = Pemesanan::where('status', 'pending')
+        ->whereDoesntHave('pembayaran')
         ->where('created_at', '<', $cutoff)
         ->update(['status' => 'cancelled', 'updated_at' => now()]);
 
-    $this->info("Expired {$expired} pending bookings older than {$hours}h.");
+    // Safety net: in case there are older records already marked cancelled but have payment activity,
+    // keep them in pending so they can be verified / re-uploaded.
+    $restored = Pemesanan::where('status', 'cancelled')
+        ->whereHas('pembayaran', function ($q) {
+            $q->whereIn('status', ['pending', 'rejected']);
+        })
+        ->update(['status' => 'pending', 'updated_at' => now()]);
+
+    $this->info("Expired {$expired} pending bookings older than {$hours}h. Restored {$restored} cancelled bookings with payments.");
 })->purpose('Expire pending bookings older than configured hours');

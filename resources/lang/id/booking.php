@@ -21,6 +21,19 @@ return [
     'payment_proof' => 'Bukti Pembayaran',
     'submit_proof' => 'Kirim Bukti',
     'cancel' => 'Batal',
+    'payment_status_pending' => 'Bukti pembayaran sudah diterima. Menunggu verifikasi admin.',
+    'payment_status_verified' => 'Pembayaran sudah diverifikasi. Terima kasih!',
+    'payment_status_rejected' => 'Pembayaran ditolak. Silakan unggah ulang bukti pembayaran.',
+    'payment_reject_reason_label' => 'Alasan penolakan',
+    'payment_reupload_note' => 'Jika hanya bukti transfer yang salah, Anda cukup unggah ulang bukti pembayaran.',
+    'payment_cannot_upload' => 'Tidak bisa mengunggah bukti pembayaran saat ini.',
+    'payment_cannot_cancel' => 'Tidak bisa membatalkan booking saat menunggu verifikasi admin.',
+    'print_proof' => 'Cetak Bukti',
+    'print_title' => 'Bukti Booking',
+    'print_subtitle' => 'Tunjukkan bukti ini saat check-in.',
+    'print_note' => 'Simpan bukti ini. Jika diperlukan, admin dapat memverifikasi kode booking di sistem.',
+    'print_footer' => 'Dokumen ini dibuat otomatis oleh sistem.',
+    'guest_name' => 'Nama Wisatawan',
 
     // Booking index (riwayat)
     'history_title' => 'Riwayat Booking',
@@ -34,4 +47,5 @@ return [
     'total_header' => 'Total',
     'status_header' => 'Status',
     'no_bookings' => 'Belum ada pemesanan.',
+    'view_detail' => 'Detail',
 ];
