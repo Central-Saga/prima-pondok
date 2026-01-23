@@ -30,7 +30,7 @@ new #[Layout('components.layouts.public')] class extends Component {
                 <div class="relative aspect-video bg-black" data-about-video>
                     <iframe
                         class="absolute inset-0 h-full w-full"
-                        src="https://www.youtube-nocookie.com/embed/uBtKIHKExyc?autoplay=1&mute=1&loop=1&playlist=uBtKIHKExyc&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1"
+                        src="https://www.youtube-nocookie.com/embed/u5QDT1cTRbo?autoplay=1&mute=1&loop=1&playlist=u5QDT1cTRbo&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1"
                         title="{{ __('about.video_title') }}"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
