@@ -31,4 +31,38 @@ return [
     'error_not_available' => 'Kamar tidak tersedia pada tanggal tersebut',
     'error_room_maintenance' => 'Kamar sedang maintenance dan belum bisa dipesan',
     'error_room_unavailable' => 'Kamar sedang tidak tersedia dan belum bisa dipesan',
+
+    // Status badges
+    'status_available' => 'Tersedia',
+    'status_maintenance' => 'Maintenance',
+    'status_unavailable' => 'Tidak Tersedia',
+    'status_maintenance_title' => 'Kamar Sedang Maintenance',
+    'status_unavailable_title' => 'Kamar Tidak Tersedia',
+    'contact_admin_help' => 'Silakan hubungi kami via WhatsApp untuk informasi lebih lanjut.',
+
+    // Calendar modal
+    'choose_date_calendar' => 'Pilih Tanggal dengan Kalender',
+    'or_label' => 'atau pilih manual',
+    'choose_your_date' => 'Pilih Tanggal Anda',
+    'select_checkin_checkout' => 'Pilih tanggal check-in dan check-out',
+    'not_available' => 'Terisi',
+        'select_checkout_date' => 'Pilih tanggal check-out untuk melanjutkan.',
+    'check_in_short' => 'Masuk',
+    'check_out_short' => 'Keluar',
+    'selected_dates' => 'Tanggal Dipilih',
+    'selected' => 'Dipilih',
+    'booked' => 'Terisi',
+    'available' => 'Tersedia',
+        'booking_summary' => 'Ringkasan Booking',
+        'reset_dates' => 'Pilih Ulang',
+        'close_calendar' => 'Tutup Kalender',
+
+    // Maintenance schedule
+    'maintenance_schedule_title' => 'Jadwal Maintenance',
+    'error_maintenance_dates' => 'Tanggal yang dipilih bertabrakan dengan jadwal maintenance kamar',
+
+    // Calendar cell labels
+    'calendar_maintenance_label' => 'MAINT|ENANCE',
+    'calendar_not_available_label' => 'NOT|AVAILABLE',
+    'no_photo_fallback' => 'Tidak ada foto',
 ];

@@ -18,17 +18,9 @@ new #[Layout('components.layouts.public')] class extends Component {
         $user = Auth::user();
         $wisatawanId = $user?->wisatawan?->id;
 
-        // Jika sudah ada pembayaran (pending/rejected), pastikan status booking tidak tetap "cancelled"
-        Pemesanan::where('wisatawan_id', $wisatawanId)
-            ->where('status', Pemesanan::STATUS_CANCELLED)
-            ->whereHas('pembayaran', function ($q) {
-                $q->whereIn('status', ['pending', 'rejected']);
-            })
-            ->update(['status' => Pemesanan::STATUS_PENDING]);
-
         return Pemesanan::with(['kamar','review'])
             ->where('wisatawan_id', $wisatawanId)
-            ->where('status', '!=', Pemesanan::STATUS_CANCELLED)
+            ->where('status', '!=', Pemesanan::STATUS_WAITING)
             ->when($this->status !== 'all', fn($q) => $q->where('status',$this->status))
             ->latest()
             ->paginate(10);
@@ -48,6 +40,8 @@ new #[Layout('components.layouts.public')] class extends Component {
                     <option value="pending">{{ __('booking.filter_pending') }}</option>
                     <option value="confirmed">{{ __('booking.filter_confirmed') }}</option>
                     <option value="completed">{{ __('booking.filter_completed') }}</option>
+                    <option value="cancelled">{{ __('booking.filter_cancelled') }}</option>
+                    <option value="extend">{{ __('booking.filter_extend') }}</option>
                 </select>
             </div>
         </div>

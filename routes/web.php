@@ -10,8 +10,8 @@ use App\Models\Review;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
-    $kamar = Kamar::query()->with('fotos')->where('status', 'available')->latest()->take(6)->get();
-    $hasMoreKamar = Kamar::query()->where('status','available')->count() > 6;
+    $kamar = Kamar::query()->with('fotos')->whereIn('status', ['available', 'maintenance'])->latest()->take(6)->get();
+    $hasMoreKamar = Kamar::query()->whereIn('status', ['available', 'maintenance'])->count() > 6;
     $galeri = Galeri::query()->where('status', 'active')->orderBy('urutan')->take(8)->get();
     $reviews = Review::query()
         ->with(['kamar','wisatawan'])
@@ -78,9 +78,6 @@ Volt::route('admin/galeri', 'admin.galeri.index')->middleware(['auth', 'role:adm
 Volt::route('admin/galeri/create', 'admin.galeri.create')->middleware(['auth', 'role:admin'])->name('admin.galeri.create');
 Volt::route('admin/galeri/{galeri}/edit', 'admin.galeri.edit')->middleware(['auth', 'role:admin'])->name('admin.galeri.edit');
 Volt::route('admin/galeri/order', 'admin.galeri.order')->middleware(['auth', 'role:admin'])->name('admin.galeri.order');
-Volt::route('admin/pembayaran', 'admin.pembayaran-index')->middleware(['auth', 'role:admin'])->name('admin.pembayaran');
-Volt::route('admin/pembayaran/create', 'admin.pembayaran.create')->middleware(['auth', 'role:admin'])->name('admin.pembayaran.create');
-Volt::route('admin/pembayaran/{pembayaran}/edit', 'admin.pembayaran.edit')->middleware(['auth', 'role:admin'])->name('admin.pembayaran.edit');
 // Admin - Bank CRUD pages
 Volt::route('admin/bank', 'admin.bank.index')->middleware(['auth', 'role:admin'])->name('admin.bank.index');
 Volt::route('admin/bank/create', 'admin.bank.create')->middleware(['auth', 'role:admin'])->name('admin.bank.create');
@@ -93,7 +90,6 @@ Volt::route('admin/fasilitas/{fasilitas}/edit', 'admin.fasilitas.edit')->middlew
 Volt::route('admin/pemesanan', 'admin.pemesanan.index')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.index');
 Volt::route('admin/pemesanan/create', 'admin.pemesanan.create')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.create');
 Volt::route('admin/pemesanan/{pemesanan}/edit', 'admin.pemesanan.edit')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.edit');
-Volt::route('admin/pemesanan/{pemesanan}', 'admin.pemesanan.show')->middleware(['auth', 'role:admin'])->name('admin.pemesanan.show');
 // Admin - Laporan
 Volt::route('admin/laporan', 'admin.laporan.index')->middleware(['auth', 'role:admin'])->name('admin.laporan');
 Volt::route('admin/landing-settings', 'admin.landing-settings')->middleware(['auth', 'role:admin'])->name('admin.landing.settings');
@@ -108,6 +104,7 @@ Volt::route('admin/users/{user}/edit', 'admin.users.edit')->middleware(['auth', 
 
 Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) {
     abort_unless(auth()->check() && auth()->user()->hasRole('admin'), 403);
+    
     $from = $request->filled('from')
         ? \Illuminate\Support\Carbon::parse($request->input('from'))
         : now()->startOfMonth();
@@ -119,7 +116,7 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
     $qFrom = $from->copy()->startOfDay();
     $qTo = $to->copy()->endOfDay();
 
-    $rows = \App\Models\Pemesanan::with(['wisatawan','kamar'])
+    $bookings = \App\Models\Pemesanan::with(['wisatawan','kamar'])
         ->whereBetween('created_at', [$qFrom, $qTo])
         ->orderBy('id')
         ->get();
@@ -129,41 +126,25 @@ Route::get('admin/laporan/export', function (\Illuminate\Http\Request $request) 
         && $to->copy()->endOfDay()->equalTo($to->copy()->endOfMonth()->endOfDay())
         && $from->isSameMonth($to);
 
+    $months = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+    
     if ($isFullMonth) {
-        $months = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
-        $filename = sprintf('Laporan Bulan %s %d.csv', $months[(int) $from->month] ?? $from->format('F'), (int) $from->year);
+        $filename = sprintf('Laporan Bulan %s %d.xlsx', $months[(int) $from->month] ?? $from->format('F'), (int) $from->year);
     } else {
-        $filename = sprintf('Laporan Tanggal %s sampai %s.csv',
+        $filename = sprintf('Laporan Tanggal %s sampai %s.xlsx',
             $from->format('Y-m-d'),
             $to->format('Y-m-d')
         );
     }
-    $headers = [
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-    ];
 
-    $callback = function () use ($rows) {
-        $out = fopen('php://output', 'w');
-        fputcsv($out, ['Wisatawan','Kamar','Checkin','Checkout','Malam','Total','Status']);
-        foreach ($rows as $r) {
-            fputcsv($out, [
-                optional($r->wisatawan)->name,
-                optional($r->kamar)->nama_kamar,
-                optional($r->tanggal_checkin)?->format('Y-m-d'),
-                optional($r->tanggal_checkout)?->format('Y-m-d'),
-                $r->jumlah_hari,
-                $r->total_bayar,
-                $r->status,
-            ]);
-        }
-        fclose($out);
-    };
-
-    return response()->stream($callback, 200, $headers);
+    return \Maatwebsite\Excel\Facades\Excel::download(
+        new \App\Exports\PemesananExport($bookings, (int) $from->month, (int) $from->year),
+        $filename
+    );
 })->name('admin.laporan.export');
 Volt::route('booking/{pemesanan}', 'wisatawan.booking-show')->middleware(['auth', 'role:wisatawan'])->name('booking.show');
 Volt::route('booking', 'wisatawan.booking-index')->middleware(['auth', 'role:wisatawan'])->name('booking.index');
+Volt::route('booking/{pemesanan}/extend', 'wisatawan.booking-extend')->middleware(['auth', 'role:wisatawan'])->name('booking.extend');
 Volt::route('booking/{pemesanan}/review', 'wisatawan.review-create')->middleware(['auth', 'role:wisatawan'])->name('booking.review');
 Volt::route('booking/{pemesanan}/print', 'wisatawan.booking-print')->middleware(['auth', 'role:wisatawan'])->name('booking.print');
 Volt::route('akun/profil', 'wisatawan.profile')->middleware(['auth', 'role:wisatawan'])->name('wisatawan.profile');

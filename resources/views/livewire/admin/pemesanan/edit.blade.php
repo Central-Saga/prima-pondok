@@ -122,6 +122,7 @@ new class extends Component {
                     <option value="confirmed">confirmed</option>
                     <option value="cancelled">cancelled</option>
                     <option value="completed">completed</option>
+                    <option value="extend">extend</option>
                 </select>
             </div>
         </div>

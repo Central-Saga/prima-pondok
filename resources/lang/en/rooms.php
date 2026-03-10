@@ -31,4 +31,38 @@ return [
     'error_not_available' => 'The room is not available on those dates',
     'error_room_maintenance' => 'This room is under maintenance and cannot be booked yet',
     'error_room_unavailable' => 'This room is currently unavailable and cannot be booked yet',
+
+    // Status badges
+    'status_available' => 'Available',
+    'status_maintenance' => 'Maintenance',
+    'status_unavailable' => 'Unavailable',
+    'status_maintenance_title' => 'Room Under Maintenance',
+    'status_unavailable_title' => 'Room Not Available',
+    'contact_admin_help' => 'Please contact us via WhatsApp for more information.',
+
+    // Calendar modal
+    'choose_date_calendar' => 'Choose Date with Calendar',
+    'or_label' => 'or select manually',
+    'choose_your_date' => 'Choose your Date',
+    'select_checkin_checkout' => 'Select check-in and check-out dates',
+    'select_checkout_date' => 'Select a check-out date to continue.',
+    'not_available' => 'Booked',
+    'check_in_short' => 'In',
+    'check_out_short' => 'Out',
+    'selected_dates' => 'Selected Dates',
+    'selected' => 'Selected',
+    'booked' => 'Booked',
+    'available' => 'Available',
+    'booking_summary' => 'Booking Summary',
+    'reset_dates' => 'Reset Dates',
+    'close_calendar' => 'Close Calendar',
+
+    // Maintenance schedule
+    'maintenance_schedule_title' => 'Maintenance Schedule',
+    'error_maintenance_dates' => 'Selected dates overlap with room maintenance schedule',
+
+    // Calendar cell labels
+    'calendar_maintenance_label' => 'MAINT|ENANCE',
+    'calendar_not_available_label' => 'NOT|AVAILABLE',
+    'no_photo_fallback' => 'No photos available',
 ];

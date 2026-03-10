@@ -22,7 +22,7 @@ new #[Layout('components.layouts.public')] class extends Component {
             </div>
         </div>
     </section>
-
+  
     <!-- Video Placeholder -->
     <section class="py-12 sm:py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

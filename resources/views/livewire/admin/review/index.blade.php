@@ -57,7 +57,6 @@ new class extends Component {
                 <option value="published">Tampil</option>
                 <option value="hidden">Tersembunyi</option>
             </select>
-            <a href="{{ route('admin.review.create') }}" class="ui-btn-primary">Tambah</a>
         </div>
     </div>
 

@@ -29,6 +29,21 @@ class PembayaranObserver
         }
 
         if ($pembayaran->status === Pembayaran::STATUS_VERIFIED) {
+            // For extend bookings, set status to confirmed (admin verifies extend payment)
+            if ($booking->is_extend && $booking->status !== Pemesanan::STATUS_CONFIRMED) {
+                $booking->update(['status' => Pemesanan::STATUS_CONFIRMED]);
+
+                // Also complete the parent booking since extend is now confirmed
+                if ($booking->extend_from_id) {
+                    $parent = Pemesanan::find($booking->extend_from_id);
+                    if ($parent && $parent->status === Pemesanan::STATUS_EXTEND) {
+                        $parent->update(['status' => Pemesanan::STATUS_COMPLETED]);
+                    }
+                }
+
+                return;
+            }
+
             if ($booking->status !== Pemesanan::STATUS_CONFIRMED) {
                 $booking->update(['status' => Pemesanan::STATUS_CONFIRMED]);
             }

@@ -39,4 +39,7 @@ return [
     'lightbox_close' => 'Close',
     'lightbox_prev' => 'Previous',
     'lightbox_next' => 'Next',
+
+    'reviewer_anonymous' => 'Guest',
+    'footer_copyright' => '© :year Pondok Teges. All rights reserved.',
 ];

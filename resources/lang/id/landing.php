@@ -39,4 +39,7 @@ return [
     'lightbox_close' => 'Tutup',
     'lightbox_prev' => 'Sebelumnya',
     'lightbox_next' => 'Berikutnya',
+
+    'reviewer_anonymous' => 'Pelanggan',
+    'footer_copyright' => '© :year Pondok Teges. Hak cipta dilindungi.',
 ];

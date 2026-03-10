@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'dashboard_title' => 'Guest Dashboard',
+    'find_rooms' => 'Find Rooms',
+    'profile_button' => 'Profile',
+    'recent_bookings' => 'Recent Bookings',
     'profile_title' => 'Profile',
     'profile_subtitle' => 'Update your account information.',
     'password_title' => 'Change Password',
@@ -10,6 +14,9 @@ return [
     'email' => 'Email',
     'phone' => 'Phone',
     'nationality' => 'Nationality',
+    'select_country' => 'Select country...',
+    'search_country' => 'Search country...',
+    'no_country_found' => 'No country found.',
 
     'current_password' => 'Current Password',
     'new_password' => 'New Password',

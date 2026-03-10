@@ -7,21 +7,37 @@ new class extends Component {
     public Fasilitas $fasilitas;
 
     public string $nama = '';
-    public string $nama_en = '';
 
     public function mount(Fasilitas $fasilitas): void
     {
         $this->fasilitas = $fasilitas;
         $this->nama = (string) $fasilitas->getRawOriginal('nama');
-        $this->nama_en = (string) ($fasilitas->getRawOriginal('nama_en') ?? '');
+    }
+
+    private function translateToEnglish(string $indonesian): string
+    {
+        $translations = [
+            'Dapur' => 'kitchen',
+            'Lemari / rak pakaian' => 'wardrobe',
+            'Meja kecil / meja kerja dan kursi' => 'small table',
+            'pendingin' => 'AC',
+            'AC' => 'AC',
+            'Teko Listrik' => 'electric kettle',
+            'TV' => 'TV',
+            'Wi-Fi' => 'Wi-Fi',
+        ];
+
+        return $translations[trim($indonesian)] ?? strtolower(trim($indonesian));
     }
 
     public function save(): void
     {
         $data = $this->validate([
             'nama' => 'required|string|max:150',
-            'nama_en' => 'nullable|string|max:150',
         ]);
+        
+        $data['nama_en'] = $this->translateToEnglish($data['nama']);
+        
         $this->fasilitas->update($data);
         $this->redirectRoute('admin.fasilitas.index');
     }
@@ -35,14 +51,10 @@ new class extends Component {
 
     <form wire:submit="save" class="mt-6 space-y-4 ui-card">
         <div>
-            <label class="ui-label">Nama Fasilitas</label>
-            <input type="text" wire:model="nama" class="ui-input" />
+            <label class="ui-label">Nama Fasilitas (Indonesia)</label>
+            <input type="text" wire:model="nama" class="ui-input" placeholder="Contoh: Dapur, Wi-Fi, AC, TV" />
             @error('nama') <div class="ui-error">{{ $message }}</div> @enderror
-        </div>
-        <div>
-            <label class="ui-label">Nama (English)</label>
-            <input type="text" wire:model="nama_en" class="ui-input" />
-            @error('nama_en') <div class="ui-error">{{ $message }}</div> @enderror
+            <p class="mt-1 text-xs text-slate-500">* Nama akan otomatis diterjemahkan ke bahasa Inggris</p>
         </div>
         <div class="flex items-center gap-3">
             <button class="ui-btn-primary">Update</button>

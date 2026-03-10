@@ -59,7 +59,7 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <h3 class="text-lg font-medium text-slate-900">{{ $item->nama_kamar }}</h3>
                         <div class="mt-2 flex items-center gap-2">
                             <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">{{ $item->tipe_kamar ?: __('rooms.default_type') }}</span>
-                            <x-status-badge :status="$item->status" />
+                            <x-status-badge :status="$item->getDisplayStatus()" />
                         </div>
                         <p class="mt-2 font-semibold text-slate-900">Rp {{ number_format($item->harga, 0, ',', '.') }}{{ __('rooms.price_suffix') }}</p>
                         <div class="mt-4">

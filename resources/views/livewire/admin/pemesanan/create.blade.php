@@ -7,36 +7,190 @@ use App\Models\User;
 use Livewire\Volt\Component;
 
 new class extends Component {
-    public array $wisatawanList = [];
     public array $kamarList = [];
 
-    public ?int $wisatawan_id = null;
     public ?string $wisatawan_nama = null;
-    public bool $use_manual_wisatawan = false;
     public ?int $kamar_id = null;
     public ?string $tanggal_checkin = null;
     public ?string $tanggal_checkout = null;
     public int $jumlah_hari = 1;
     public float $total_bayar = 0.0;
     public string $status = Pemesanan::STATUS_PENDING;
+    public bool $showCalendar = false;
+    public int $currentMonth;
+    public int $currentYear;
+    public array $bookedDates = [];
 
     public function mount(): void
     {
-        $this->wisatawanList = Wisatawan::orderBy('name')->get()->toArray();
         $this->kamarList = Kamar::orderBy('nama_kamar')->get()->toArray();
+        $this->currentMonth = now()->month;
+        $this->currentYear = now()->year;
+    }
+
+    public function openCalendar(): void {
+        $this->showCalendar = true;
+        $this->loadBookedDates();
+    }
+
+    public function closeCalendar(): void {
+        $this->showCalendar = false;
+    }
+
+    public function previousMonth(): void {
+        $date = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, 1)->subMonth();
+        $this->currentMonth = $date->month;
+        $this->currentYear = $date->year;
+        $this->loadBookedDates();
+    }
+
+    public function nextMonth(): void {
+        $date = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, 1)->addMonth();
+        $this->currentMonth = $date->month;
+        $this->currentYear = $date->year;
+        $this->loadBookedDates();
+    }
+
+    public function selectDate(int $day): void {
+        if (!$this->tanggal_checkin) {
+            $this->tanggal_checkin = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day)->format('Y-m-d');
+        } elseif (!$this->tanggal_checkout) {
+            $checkout = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day)->format('Y-m-d');
+            if ($checkout > $this->tanggal_checkin) {
+                $this->tanggal_checkout = $checkout;
+                $this->recalc();
+                $this->showCalendar = false;
+            }
+        } else {
+            $this->tanggal_checkin = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day)->format('Y-m-d');
+            $this->tanggal_checkout = null;
+        }
+    }
+
+    public function getCalendarDays(): array
+    {
+        $firstDay = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, 1);
+        $daysInMonth = $firstDay->daysInMonth;
+        $startDay = $firstDay->dayOfWeek;
+        
+        $days = [];
+        
+        for ($i = 0; $i < ($startDay - 1); $i++) {
+            $days[] = null;
+        }
+        
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $days[] = $day;
+        }
+        
+        while (count($days) % 7 !== 0) {
+            $days[] = null;
+        }
+        
+        return $days;
+    }
+
+    private function loadBookedDates(): void
+    {
+        $this->bookedDates = [];
+        if (!$this->kamar_id) return;
+        
+        $startOfMonth = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, 1)->startOfDay();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
+        
+        $bookings = Pemesanan::where('kamar_id', $this->kamar_id)
+            ->whereIn('status', [Pemesanan::STATUS_PENDING, Pemesanan::STATUS_CONFIRMED])
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->where('tanggal_checkin', '<=', $endOfMonth)
+                  ->where('tanggal_checkout', '>=', $startOfMonth);
+            })
+            ->get();
+        
+        foreach ($bookings as $booking) {
+            $start = \Carbon\Carbon::parse($booking->tanggal_checkin);
+            $end = \Carbon\Carbon::parse($booking->tanggal_checkout);
+            
+            $current = $start->copy();
+            while ($current->lt($end)) {
+                if ($current->month === $this->currentMonth && $current->year === $this->currentYear) {
+                    $this->bookedDates[] = $current->day;
+                }
+                $current->addDay();
+            }
+        }
+    }
+
+    public function isDayBooked(int $day): bool {
+        return in_array($day, $this->bookedDates);
+    }
+
+    public function isDayPast(int $day): bool {
+        $cd = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day);
+        return $cd->isPast() && !$cd->isToday();
+    }
+
+    public function isDaySelected(int $day): bool {
+        if (!$this->tanggal_checkin) return false;
+        $cd = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day);
+        return $cd->format('Y-m-d') === $this->tanggal_checkin;
+    }
+
+    public function renderDayCell($day): string
+    {
+        if ($day === null) {
+            return '<div></div>';
+        }
+
+        $past = $this->isDayPast($day);
+        $booked = $this->isDayBooked($day);
+        $selected = $this->isDaySelected($day);
+        $isCheckout = ($this->tanggal_checkout && \Carbon\Carbon::parse($this->tanggal_checkout)->format('Y-m-d') === \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day)->format('Y-m-d'));
+        $isInRange = false;
+        
+        if ($this->tanggal_checkin && $this->tanggal_checkout) {
+            $checkinDate = \Carbon\Carbon::parse($this->tanggal_checkin)->startOfDay();
+            $checkoutDate = \Carbon\Carbon::parse($this->tanggal_checkout)->startOfDay();
+            $currentDate = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day)->startOfDay();
+            $isInRange = $currentDate->isBetween($checkinDate, $checkoutDate) && !$currentDate->equalTo($checkoutDate);
+        }
+        
+        $buttonClass = "p-3.5 rounded-lg text-sm font-semibold transition-all duration-200 min-h-[80px] flex flex-col items-center justify-center shadow-sm ";
+        if ($past || $booked) {
+            $buttonClass .= "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
+        } elseif ($selected || $isCheckout) {
+            $buttonClass .= "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 border-2 border-emerald-400";
+        } elseif ($isInRange) {
+            $buttonClass .= "bg-emerald-50 text-emerald-800 border-2 border-emerald-200 hover:bg-emerald-100";
+        } else {
+            $buttonClass .= "bg-white border-2 border-sky-200 text-slate-800 hover:bg-sky-50 hover:border-sky-400 hover:shadow-md transform hover:-translate-y-0.5";
+        }
+        
+        $html = '<button type="button" wire:click="selectDate(' . $day . ')"';
+        if ($past || $booked) $html .= ' disabled';
+        $html .= ' class="' . $buttonClass . '">';
+        $html .= '<div class="text-lg font-bold mb-1">' . $day . '</div>';
+        
+        if ($past || $booked) {
+            $html .= '<div class="text-xs text-gray-400 font-medium">NOT AVAILABLE</div>';
+        } elseif (!$selected && !$isCheckout && !$isInRange && $this->kamar_id) {
+            $kamar = Kamar::find($this->kamar_id);
+            if ($kamar) {
+                $html .= '<div class="text-xs text-sky-600 font-medium mt-1">IDR ' . number_format($kamar->harga, 0, ',', '.') . '</div>';
+            }
+        }
+        
+        $html .= '</button>';
+        
+        return $html;
     }
 
     public function updated($field): void
     {
-        if ($field === 'use_manual_wisatawan') {
-            if ($this->use_manual_wisatawan) {
-                $this->wisatawan_id = null;
-            } else {
-                $this->wisatawan_nama = null;
-            }
+        if ($field === 'kamar_id') {
+            $this->loadBookedDates();
+            $this->recalc();
         }
-
-        if (in_array($field, ['tanggal_checkin','tanggal_checkout','kamar_id'])) {
+        if (in_array($field, ['tanggal_checkin','tanggal_checkout'])) {
             $this->recalc();
         }
     }
@@ -57,6 +211,7 @@ new class extends Component {
     public function save(): void
     {
         $rules = [
+            'wisatawan_nama' => 'required|string|max:255',
             'kamar_id' => 'required|exists:kamar,id',
             'tanggal_checkin' => 'required|date',
             'tanggal_checkout' => 'required|date|after:tanggal_checkin',
@@ -65,46 +220,38 @@ new class extends Component {
             'status' => 'required|string',
         ];
 
-        if ($this->use_manual_wisatawan) {
-            $rules['wisatawan_nama'] = 'required|string|max:255';
-        } else {
-            $rules['wisatawan_id'] = 'required|exists:wisatawan,id';
-        }
-
         $data = $this->validate($rules);
 
-        if ($this->use_manual_wisatawan) {
-            $baseEmail = str_replace(' ', '', strtolower($this->wisatawan_nama));
-            $email = $baseEmail.'@example.com';
+        $baseEmail = str_replace(' ', '', strtolower($this->wisatawan_nama));
+        $email = $baseEmail.'@example.com';
 
-            // Ensure unique email by appending a counter if needed
-            $counter = 1;
-            while (User::where('email', $email)->exists()) {
-                $email = $baseEmail.$counter.'@example.com';
-                $counter++;
-            }
-
-            $user = User::create([
-                'name' => $this->wisatawan_nama,
-                'email' => $email,
-                'password' => 'password',
-            ]);
-
-            try {
-                $user->assignRole('wisatawan');
-            } catch (\Throwable $e) {
-                // ignore if role not seeded
-            }
-
-            $wisatawan = Wisatawan::create([
-                'user_id' => $user->id,
-                'name' => $this->wisatawan_nama,
-                'status' => 'active',
-            ]);
-
-            $data['wisatawan_id'] = $wisatawan->id;
-            unset($data['wisatawan_nama']);
+        // Ensure unique email by appending a counter if needed
+        $counter = 1;
+        while (User::where('email', $email)->exists()) {
+            $email = $baseEmail.$counter.'@example.com';
+            $counter++;
         }
+
+        $user = User::create([
+            'name' => $this->wisatawan_nama,
+            'email' => $email,
+            'password' => 'password',
+        ]);
+
+        try {
+            $user->assignRole('wisatawan');
+        } catch (\Throwable $e) {
+            // ignore if role not seeded
+        }
+
+        $wisatawan = Wisatawan::create([
+            'user_id' => $user->id,
+            'name' => $this->wisatawan_nama,
+            'status' => 'active',
+        ]);
+
+        $data['wisatawan_id'] = $wisatawan->id;
+        unset($data['wisatawan_nama']);
 
         Pemesanan::create($data);
         $this->redirectRoute('admin.pemesanan.index');
@@ -120,32 +267,13 @@ new class extends Component {
     <form wire:submit="save" class="mt-6 space-y-4 ui-card">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <div class="flex items-center justify-between gap-2">
-                    <label class="ui-label">Wisatawan</label>
-                    <label class="inline-flex items-center gap-2 text-xs text-slate-600">
-                        <input type="checkbox" wire:model.live="use_manual_wisatawan" class="rounded border-slate-300">
-                        <span>Input manual</span>
-                    </label>
-                </div>
-                <select wire:model="wisatawan_id" class="ui-select" @if($use_manual_wisatawan) disabled @endif>
-                    <option value="">-- pilih --</option>
-                    @foreach($wisatawanList as $w)
-                        <option value="{{ $w['id'] }}">{{ $w['name'] }}</option>
-                    @endforeach
-                </select>
-                @error('wisatawan_id') <div class="ui-error">{{ $message }}</div> @enderror
-
-                @if($use_manual_wisatawan)
-                    <div class="mt-2">
-                        <label class="ui-label text-xs">Nama wisatawan (manual)</label>
-                        <input type="text" wire:model="wisatawan_nama" class="ui-input" />
-                        @error('wisatawan_nama') <div class="ui-error">{{ $message }}</div> @enderror
-                    </div>
-                @endif
+                <label class="ui-label">Wisatawan</label>
+                <input type="text" wire:model="wisatawan_nama" placeholder="Ketik nama wisatawan" class="ui-input" />
+                @error('wisatawan_nama') <div class="ui-error">{{ $message }}</div> @enderror
             </div>
             <div>
                 <label class="ui-label">Kamar</label>
-                <select wire:model="kamar_id" class="ui-select">
+                <select wire:model.live="kamar_id" class="ui-select">
                     <option value="">-- pilih --</option>
                     @foreach($kamarList as $k)
                         <option value="{{ $k['id'] }}">{{ $k['nama_kamar'] }}</option>
@@ -154,18 +282,68 @@ new class extends Component {
                 @error('kamar_id') <div class="ui-error">{{ $message }}</div> @enderror
             </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <button type="button" wire:click="openCalendar" @disabled(!$kamar_id) class="w-full rounded-lg border-2 border-dashed border-sky-300 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-700 hover:bg-sky-100 transition-colors enabled:hover:bg-sky-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300">
+                <svg class="inline-block h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                @if(!$kamar_id)
+                    Pilih Kamar Terlebih Dahulu
+                @else
+                    Choose Date with Calendar
+                @endif
+            </button>
+        </div>
+        @if($kamar_id && $showCalendar)
+        <div class="mt-6 p-6 border-2 border-sky-200 rounded-xl bg-gradient-to-br from-white to-sky-50 shadow-lg">
+            <!-- Month Navigation -->
+            <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-sky-100">
+                <button type="button" wire:click="previousMonth" class="w-10 h-10 flex items-center justify-center rounded-full text-2xl font-bold text-sky-600 hover:bg-sky-100 hover:text-sky-700 transition-all duration-200 shadow-sm hover:shadow">‹</button>
+                <h3 class="text-xl font-bold text-slate-800">{{ ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][$currentMonth - 1] }} {{ $currentYear }}</h3>
+                <button type="button" wire:click="nextMonth" class="w-10 h-10 flex items-center justify-center rounded-full text-2xl font-bold text-sky-600 hover:bg-sky-100 hover:text-sky-700 transition-all duration-200 shadow-sm hover:shadow">›</button>
+            </div>
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-2 mb-6">
+                @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $dayName)
+                    <div class="text-center font-bold text-slate-600 py-2 text-xs uppercase tracking-wide">{{ $dayName }}</div>
+                @endforeach
+                @foreach($this->getCalendarDays() as $day)
+                    {!! $this->renderDayCell($day) !!}
+                @endforeach
+            </div>
+            <!-- Date Summary -->
+            @if($tanggal_checkin)
+                <div class="bg-gradient-to-r from-emerald-50 to-sky-50 p-5 rounded-xl border-2 border-emerald-200 mb-4 shadow-md">
+                    <p class="text-sm text-slate-700"><strong class="text-emerald-700">Check-in:</strong> {{ $tanggal_checkin }}</p>
+                    @if($tanggal_checkout)
+                        <p class="text-sm text-slate-700 mt-1"><strong class="text-emerald-700">Check-out:</strong> {{ $tanggal_checkout }}</p>
+                        <div class="mt-3 pt-3 border-t border-emerald-200">
+                            <p class="text-sm text-slate-700"><strong class="text-sky-700">Nights:</strong> {{ $jumlah_hari }}</p>
+                            <p class="text-base font-bold text-slate-900 mt-1"><strong class="text-sky-700">Total:</strong> Rp {{ number_format($total_bayar, 0, ',', '.') }}</p>
+                        </div>
+                    @endif
+                </div>
+            @endif
+            <button type="button" wire:click="closeCalendar" class="w-full bg-gradient-to-r from-slate-500 to-slate-600 text-white font-semibold py-3 rounded-lg hover:from-slate-600 hover:to-slate-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                <svg class="inline-block w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Close Calendar
+            </button>
+        </div>
+        @endif
+        @if($tanggal_checkin && $tanggal_checkout)
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-emerald-50 border-2 border-emerald-200 rounded-lg mb-6">
             <div>
-                <label class="ui-label">Check-in</label>
-                <input type="date" wire:model.live.debounce.500ms="tanggal_checkin" class="ui-input" />
-                @error('tanggal_checkin') <div class="ui-error">{{ $message }}</div> @enderror
+                <label class="ui-label text-emerald-700">Check-in</label>
+                <input type="date" wire:model="tanggal_checkin" class="ui-input bg-white" />
             </div>
             <div>
-                <label class="ui-label">Check-out</label>
-                <input type="date" wire:model.live.debounce.500ms="tanggal_checkout" class="ui-input" />
-                @error('tanggal_checkout') <div class="ui-error">{{ $message }}</div> @enderror
+                <label class="ui-label text-emerald-700">Check-out</label>
+                <input type="date" wire:model="tanggal_checkout" class="ui-input bg-white" />
             </div>
         </div>
+        @endif
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
                 <label class="ui-label">Jumlah Malam</label>

@@ -47,8 +47,7 @@ new class extends Component {
         <table class="min-w-full text-sm">
             <thead class="bg-slate-50 text-slate-600">
                 <tr>
-                    <th class="py-2 px-3 text-left">Nama (ID)</th>
-                    <th class="py-2 px-3 text-left">Nama (EN)</th>
+                    <th class="py-2 px-3 text-left">Nama Fasilitas</th>
                     <th class="py-2 px-3"></th>
                 </tr>
             </thead>
@@ -56,7 +55,6 @@ new class extends Component {
                 @foreach($this->items as $row)
                     <tr>
                         <td class="py-2 px-3">{{ $row->getRawOriginal('nama') }}</td>
-                        <td class="py-2 px-3">{{ $row->getRawOriginal('nama_en') ?: '-' }}</td>
                         <td class="py-2 px-3 text-right">
                             <a href="{{ route('admin.fasilitas.edit', $row->id) }}" class="ui-btn-secondary">Edit</a>
                             <button onclick="if(!confirm('Hapus fasilitas ini?')){event.stopImmediatePropagation()}" wire:click="delete({{ $row->id }})" class="ml-2 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-rose-700 ring-1 ring-inset ring-rose-200 hover:bg-rose-50">Hapus</button>

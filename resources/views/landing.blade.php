@@ -210,7 +210,7 @@
                     <div class="group rounded-2xl bg-white ring-1 ring-slate-100 p-5 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
                         <div class="flex items-center justify-between gap-3">
                             <div class="min-w-0">
-                                <div class="font-medium text-slate-900 truncate">{{ $r->wisatawan->name ?? 'Pelanggan' }}</div>
+                                <div class="font-medium text-slate-900 truncate">{{ $r->wisatawan->name ?? __('landing.reviewer_anonymous') }}</div>
                                 <div class="text-xs text-slate-600 truncate">{{ $r->kamar->nama_kamar ?? '-' }}</div>
                             </div>
                             <div class="flex items-center gap-1 shrink-0" aria-label="Rating">
@@ -327,9 +327,10 @@
 
       document.body.appendChild(overlay);
       const imgEl = overlay.querySelector('img');
-      const btnClose = overlay.querySelector('button[aria-label="Tutup"]');
-      const btnPrev = overlay.querySelector('button[aria-label="Sebelumnya"]');
-      const btnNext = overlay.querySelector('button[aria-label="Berikutnya"]');
+      const buttons = overlay.querySelectorAll('button');
+      const btnClose = buttons[0];
+      const btnPrev = buttons[1];
+      const btnNext = buttons[2];
 
       const setSrc = (i) => {
         idx = (i + sources.length) % sources.length;

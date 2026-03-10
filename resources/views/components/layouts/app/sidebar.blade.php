@@ -19,8 +19,6 @@
                         <flux:navlist.item icon="cog-6-tooth" :href="route('admin.fasilitas.index')" :current="request()->routeIs('admin.fasilitas.*')" wire:navigate>Fasilitas</flux:navlist.item>
                         <flux:navlist.item icon="photo" :href="route('admin.galeri.index')" :current="request()->routeIs('admin.galeri.*')" wire:navigate>Galeri</flux:navlist.item>
                         <flux:navlist.item icon="calendar-days" :href="route('admin.pemesanan.index')" :current="request()->routeIs('admin.pemesanan.*')" wire:navigate>Pemesanan</flux:navlist.item>
-                        <flux:navlist.item icon="banknotes" :href="route('admin.pembayaran')" :current="request()->routeIs('admin.pembayaran')" wire:navigate>Pembayaran</flux:navlist.item>
-                        
                         <flux:navlist.item icon="credit-card" :href="route('admin.bank.index')" :current="request()->routeIs('admin.bank.*')" wire:navigate>Bank</flux:navlist.item>
                         <flux:navlist.item icon="star" :href="route('admin.review.index')" :current="request()->routeIs('admin.review.*')" wire:navigate>Review</flux:navlist.item>
                         {{-- <flux:navlist.item icon="sparkles" :href="route('admin.landing.settings')" :current="request()->routeIs('admin.landing.settings')" wire:navigate>Konten Landing</flux:navlist.item> --}}

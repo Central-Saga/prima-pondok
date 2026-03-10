@@ -55,8 +55,12 @@ new class extends Component {
 
         // KPI for selected month
         $this->pemesananCount = Pemesanan::whereBetween('created_at', [$start, $end])->count();
-        $this->totalRevenue = (float) Pembayaran::where('status','verified')
-            ->whereBetween('created_at', [$start, $end])->sum('jumlah');
+        
+        // Calculate revenue from all bookings except cancelled and pending
+        $this->totalRevenue = (float) Pemesanan::whereNotIn('status', [Pemesanan::STATUS_CANCELLED, Pemesanan::STATUS_PENDING])
+            ->whereBetween('created_at', [$start, $end])
+            ->sum('total_bayar');
+            
         $this->pembayaranPending = Pembayaran::where('status','pending')
             ->whereBetween('created_at', [$start, $end])->count();
 
@@ -139,7 +143,7 @@ new class extends Component {
                     <option value="{{ $y }}">{{ $y }}</option>
                 @endforeach
             </select>
-            <a href="{{ route('admin.laporan.export', ['from' => \Carbon\Carbon::create($year,$month,1)->startOfMonth()->format('Y-m-d'), 'to' => \Carbon\Carbon::create($year,$month,1)->endOfMonth()->format('Y-m-d')]) }}" class="ui-btn-secondary whitespace-nowrap">Export CSV</a>
+            <a href="{{ route('admin.laporan.export', ['from' => \Carbon\Carbon::create($year,$month,1)->startOfMonth()->format('Y-m-d'), 'to' => \Carbon\Carbon::create($year,$month,1)->endOfMonth()->format('Y-m-d')]) }}" class="ui-btn-secondary whitespace-nowrap">Export Excel</a>
 
             <details class="relative">
                 <summary class="list-none cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-sm hover:bg-slate-50">
@@ -168,7 +172,7 @@ new class extends Component {
                             <ul class="divide-y divide-slate-100">
                                 @foreach($pendingBookingItems as $n)
                                     <li>
-                                        <a href="{{ route('admin.pemesanan.show', $n['id']) }}" class="block px-4 py-3 hover:bg-slate-50">
+                                        <a href="{{ route('admin.pemesanan.index', ['highlight' => $n['id']]) }}" class="block px-4 py-3 hover:bg-slate-50">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="min-w-0">
                                                     <div class="text-sm font-medium text-slate-900 truncate">#{{ $n['id'] }} · {{ $n['wisatawan'] }}</div>
@@ -237,17 +241,6 @@ new class extends Component {
                 <div>
                     <div class="text-sm font-medium text-slate-900">Daftar Booking</div>
                     <div class="text-xs text-slate-500">Pantau semua pemesanan</div>
-                </div>
-            </a>
-
-            <a href="{{ route('admin.pembayaran') }}" class="group rounded-xl border border-slate-200 bg-white p-4 hover:border-amber-300 hover:bg-amber-50 transition flex items-center gap-3">
-                <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-700 ring-1 ring-inset ring-amber-200">
-                    <!-- Heroicon: banknotes -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.25 18.75h19.5M3 7.5h18m-16.5 0V18m15-10.5V18M6 10.5h.008v.008H6V10.5zm12 5.25h.008v.008H18v-.008zM12 10.5a3 3 0 100 6 3 3 0 000-6z"/></svg>
-                </span>
-                <div>
-                    <div class="text-sm font-medium text-slate-900">Pembayaran</div>
-                    <div class="text-xs text-slate-500">Verifikasi dan kelola</div>
                 </div>
             </a>
 

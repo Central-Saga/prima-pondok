@@ -12,7 +12,6 @@ new class extends Component {
     public string $status = 'active';
     public int $urutan = 0;
     public $file = null;
-    public ?string $url = null;
 
     public function save(): void
     {
@@ -20,10 +19,8 @@ new class extends Component {
             'title' => 'nullable|string|max:100',
             'status' => 'required|string',
             'urutan' => 'required|integer|min:0',
-            // Salah satu wajib diisi: file atau url
-            'url' => 'nullable|url|required_without:file',
             // Naikkan batas ukuran ke 25MB (25600 KB)
-            'file' => 'nullable|file|image|max:25600|required_without:url',
+            'file' => 'required|file|image|max:25600',
         ]);
 
         if ($this->file) {
@@ -34,7 +31,7 @@ new class extends Component {
                 $path = $path ? ltrim(str_replace('\\', '/', $path), '/') : '';
             }
         } else {
-            $path = $this->url ?? '';
+            $path = '';
         }
 
         Galeri::create([
@@ -51,7 +48,7 @@ new class extends Component {
 <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div>
         <h1 class="text-2xl font-semibold text-slate-900">Tambah Gambar Galeri</h1>
-        <p class="mt-1 text-slate-600 text-sm">Unggah gambar atau gunakan URL eksternal.</p>
+        <p class="mt-1 text-slate-600 text-sm">Unggah gambar untuk galeri.</p>
     </div>
 
     <form wire:submit.prevent="save" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 ui-card">
@@ -73,10 +70,7 @@ new class extends Component {
         <div>
             <label class="ui-label">Upload Gambar</label>
             <input type="file" wire:model="file" accept="image/*" class="ui-input file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100" />
-        </div>
-        <div class="sm:col-span-2">
-            <label class="ui-label">atau URL Gambar</label>
-            <input type="text" wire:model="url" placeholder="https://..." class="ui-input" />
+            @error('file') <div class="ui-error">{{ $message }}</div> @enderror
         </div>
         <div class="sm:col-span-2 flex items-center gap-3">
             <button class="ui-btn-primary">Simpan</button>

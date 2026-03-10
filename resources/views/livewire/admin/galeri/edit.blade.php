@@ -13,7 +13,6 @@ new class extends Component {
     public string $status = 'active';
     public int $urutan = 0;
     public $file = null;
-    public ?string $url = null;
 
     public function mount(Galeri $galeri): void
     {
@@ -21,7 +20,6 @@ new class extends Component {
         $this->title = $galeri->title;
         $this->status = $galeri->status;
         $this->urutan = (int) $galeri->urutan;
-        $this->url = $galeri->path;
     }
 
     public function save(): void
@@ -30,7 +28,6 @@ new class extends Component {
             'title' => 'nullable|string|max:100',
             'status' => 'required|string',
             'urutan' => 'required|integer|min:0',
-            'url' => 'nullable|url',
             // Naikkan batas ukuran ke 25MB (25600 KB)
             'file' => 'nullable|file|image|max:25600',
         ]);
@@ -51,8 +48,6 @@ new class extends Component {
             if ($stored) {
                 $data['path'] = $stored;
             }
-        } elseif ($this->url) {
-            $data['path'] = $this->url;
         }
 
         $this->galeri->update($data);
@@ -85,10 +80,6 @@ new class extends Component {
         <div>
             <label class="ui-label">Upload Gambar</label>
             <input type="file" wire:model="file" accept="image/*" class="ui-input file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100" />
-        </div>
-        <div class="sm:col-span-2">
-            <label class="ui-label">atau URL Gambar</label>
-            <input type="text" wire:model="url" placeholder="https://..." class="ui-input" />
         </div>
         <div class="sm:col-span-2 flex items-center gap-3">
             <button class="ui-btn-primary">Update</button>
