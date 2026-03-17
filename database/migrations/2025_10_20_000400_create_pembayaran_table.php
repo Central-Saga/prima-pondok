@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->decimal('jumlah', 12, 2)->default(0);
             $table->string('bukti_pembayaran')->nullable();
             $table->string('status')->default('pending');
+            $table->text('alasan_penolakan')->nullable();
             $table->timestamps();
         });
     }

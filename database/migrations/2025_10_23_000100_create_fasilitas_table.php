@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('fasilitas', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 150);
+            $table->string('nama_en', 150)->nullable();
             $table->timestamps();
         });
     }

@@ -1,0 +1,414 @@
+<?php if (isset($component)) { $__componentOriginal8c0e86a062c1c5bb6d0e151b7076f3fd = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8c0e86a062c1c5bb6d0e151b7076f3fd = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.layouts.public','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('layouts.public'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+    <?php
+        $heroTitle = \App\Models\Setting::get('hero_title', __('landing.hero_default_title'));
+        $heroSubtitle = \App\Models\Setting::get('hero_subtitle', __('landing.hero_default_subtitle'));
+    ?>
+
+    <!-- Hero -->
+    <section class="relative isolate overflow-hidden bg-gradient-to-b from-sky-50 to-white">
+        <?php ($heroImages = collect($galeri ?? [])->take(6)); ?>
+        <div id="heroCarousel" class="absolute inset-0">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $heroImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php ($p = trim((string)($g->path ?? ''))); ?>
+                <?php if($p === '') continue; ?>
+                <?php ($src = \Illuminate\Support\Str::startsWith($p, ['http://','https://']) ? $p : asset('storage/'.$p)); ?>
+                <div class="absolute inset-0 transition-opacity duration-700 ease-in-out <?php echo e($idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'); ?>" data-slide>
+                    <img src="<?php echo e($src); ?>" alt="<?php echo e($g->title ?? __('landing.gallery_alt')); ?>" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='<?php echo e(asset('storage/login/login reg page.webp')); ?>'">
+                </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <div class="absolute inset-0 bg-slate-100"></div>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none"></div>
+            <div class="absolute inset-0">
+                <div class="mx-auto max-w-7xl h-full px-4 sm:px-6 lg:px-8 relative">
+                
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($heroImages->count() > 1): ?>
+                    <div class="absolute bottom-6 inset-x-0 flex items-center justify-center gap-2 z-20">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $heroImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php ($p = trim((string)($g->path ?? ''))); ?>
+                            <?php if($p === '') continue; ?>
+                            <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/70 ring-1 ring-black/10 data-[active=true]:bg-white data-[active=true]:w-6 transition-[width,background-color] duration-300" data-idx="<?php echo e($i); ?>"></button>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative">
+            <div class="grid gap-10 lg:grid-cols-2 items-center">
+                <div class="max-w-2xl relative z-10">
+                <h1 class="text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-5xl"><?php echo e($heroTitle); ?></h1>
+                <p class="mt-6 text-lg leading-8 text-white/90"><?php echo e($heroSubtitle); ?></p>
+                <div class="mt-10 flex items-center gap-x-3 sm:gap-x-4">
+                    <a href="<?php echo e(route('kamar.index')); ?>" class="ui-btn-primary !bg-sky-600 hover:!bg-sky-500 ring-1 ring-white/20"><?php echo e(__('landing.hero_view_rooms')); ?></a>
+                    <a href="#kontak" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md shadow-sm transition-colors hover:bg-white/20 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                        <?php echo e(__('landing.hero_contact_us')); ?>
+
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
+                    </a>
+                </div>
+                <?php ($heroImages = collect($galeri ?? [])->take(6)); ?>
+                <div class="relative hidden" aria-hidden="true">
+                    <div id="heroCarouselHidden" class="absolute inset-0">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $heroImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php ($p = trim((string)($g->path ?? ''))); ?>
+                            <?php if($p === '') continue; ?>
+                            <?php ($src = \Illuminate\Support\Str::startsWith($p, ['http://','https://']) ? $p : asset('storage/'.$p)); ?>
+                            <div class="absolute inset-0 transition-opacity duration-700 ease-in-out <?php echo e($idx === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'); ?>" data-slide>
+                                <img src="<?php echo e($src); ?>" alt="<?php echo e($g->title ?? __('landing.gallery_alt')); ?>" class="h-full w-full object-cover" loading="lazy" onerror="this.onerror=null;this.src='<?php echo e(asset('storage/login/login reg page.webp')); ?>'">
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <div class="absolute inset-0 grid place-items-center text-slate-400"><?php echo e(__('landing.hero_no_image')); ?></div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none"></div>
+
+
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($heroImages->count() > 1): ?>
+                        <div class="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2 z-20">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $heroImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php ($p = trim((string)($g->path ?? ''))); ?>
+                                <?php if($p === '') continue; ?>
+                                <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/60 ring-1 ring-black/10 data-[active=true]:bg-white data-[active=true]:w-6 transition-[width,background-color] duration-300" data-idx="<?php echo e($i); ?>"></button>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kamar -->
+    <section id="kamar" class="py-16 sm:py-24 scroll-mt-24 bg-sky-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-end justify-between">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900"><?php echo e(__('landing.rooms_section_title')); ?></h2>
+            </div>
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = ($kamar ?? []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <div class="rounded-xl border border-sky-100 bg-white shadow-sm overflow-hidden transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md hover:border-sky-200">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(($item->fotos ?? collect())->isNotEmpty()): ?>
+                            <div class="h-40 bg-slate-100">
+                                <img src="<?php echo e(asset('storage/'.$item->fotos->first()->path)); ?>" alt="<?php echo e($item->nama_kamar); ?>" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='<?php echo e(asset('storage/login/login reg page.webp')); ?>'">
+                            </div>
+                        <?php else: ?>
+                            <div class="h-40 bg-slate-100 flex items-center justify-center text-slate-400"><?php echo e(__('landing.rooms_no_photo')); ?></div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <div class="p-4">
+                            <h3 class="text-lg font-medium text-slate-900"><?php echo e($item->nama_kamar); ?></h3>
+                            <div class="mt-2">
+                                <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200"><?php echo e($item->tipe_kamar ?: __('landing.rooms_default_type')); ?></span>
+                            </div>
+                            <p class="mt-2 font-semibold text-slate-900">Rp <?php echo e(number_format($item->harga, 0, ',', '.')); ?><?php echo e(__('landing.rooms_price_suffix')); ?></p>
+                            <div class="mt-4">
+                                <a href="<?php echo e(route('kamar.show', $item->id)); ?>" class="ui-btn-primary"><?php echo e(__('landing.rooms_book_now')); ?></a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <div class="col-span-full text-slate-600"><?php echo e(__('landing.rooms_no_data')); ?></div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(($hasMoreKamar ?? false)): ?>
+                    <div class="col-span-full flex justify-center pt-2">
+                        <a href="<?php echo e(route('kamar.index')); ?>" class="ui-btn-secondary"><?php echo e(__('landing.rooms_see_more')); ?></a>
+                    </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fasilitas with icons -->
+    <section id="fasilitas" class="py-16 bg-white scroll-mt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900"><?php echo e(__('landing.why_choose_us_title')); ?></h2>
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                        </svg>
+                    </span>
+                    <div class="mt-0.5">
+                        <div class="text-base font-semibold text-slate-900"><?php echo e(__('landing.why_location')); ?></div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                        </svg>
+                    </span>
+                    <div class="mt-0.5">
+                        <div class="text-base font-semibold text-slate-900"><?php echo e(__('landing.why_clean_rooms')); ?></div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </span>
+                    <div class="mt-0.5">
+                        <div class="text-base font-semibold text-slate-900"><?php echo e(__('landing.why_fair_price')); ?></div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-700">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />
+                        </svg>
+                    </span>
+                    <div class="mt-0.5">
+                        <div class="text-base font-semibold text-slate-900"><?php echo e(__('landing.why_wifi')); ?></div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-100 text-yellow-700">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                        </svg>
+                    </span>
+                    <div class="mt-0.5">
+                        <div class="text-base font-semibold text-slate-900"><?php echo e(__('landing.why_friendly_staff')); ?></div>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl bg-white ring-1 ring-slate-100 p-6 flex items-start gap-4 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>
+                        </svg>
+                    </span>
+                    <div class="mt-0.5">
+                        <div class="text-base font-semibold text-slate-900"><?php echo e(__('landing.why_easy_booking')); ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Review -->
+    <section id="review" class="py-16 scroll-mt-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900"><?php echo e(__('landing.reviews_title')); ?></h2>
+                    <p class="mt-2 text-slate-600"><?php echo e(__('landing.reviews_subtitle')); ?></p>
+                </div>
+                <a href="<?php echo e(route('kamar.index')); ?>" class="hidden sm:inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+                    <?php echo e(__('landing.reviews_cta_rooms')); ?>
+
+                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.69l-3.47-3.47a.75.75 0 1 1 1.06-1.06l4.75 4.75a.75.75 0 0 1 0 1.06l-4.75 4.75a.75.75 0 0 1-1.06-1.06l3.47-3.47H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = ($reviews ?? []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <div class="group rounded-2xl bg-white ring-1 ring-slate-100 p-5 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 truncate"><?php echo e($r->wisatawan->name ?? __('landing.reviewer_anonymous')); ?></div>
+                                <div class="text-xs text-slate-600 truncate"><?php echo e($r->kamar->nama_kamar ?? '-'); ?></div>
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0" aria-label="Rating">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i=1; $i<=5; $i++): ?>
+                                    <svg class="h-4 w-4 <?php echo e((int) $r->rating >= $i ? 'text-amber-400' : 'text-slate-200 group-hover:text-slate-300'); ?>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 0 0-1.176 0l-2.8 2.034c-.783.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.71c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/>
+                                    </svg>
+                                <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            </div>
+                        </div>
+
+                        <p class="mt-4 text-sm text-slate-700 leading-relaxed">
+                            “<?php echo e(\Illuminate\Support\Str::limit((string) $r->komentar, 180)); ?>”
+                        </p>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-700 transition duration-300 ease-out hover:shadow-md hover:-translate-y-0.5">
+                        <?php echo e(__('landing.reviews_none')); ?>
+
+                    </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galeri -->
+    <section id="galeri" class="py-16 scroll-mt-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl sm:text-3xl font-semibold text-slate-900"><?php echo e(__('landing.gallery_title')); ?></h2>
+            <div class="mt-8 rounded-2xl bg-white ring-1 ring-slate-100 p-4 sm:p-5">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = ($galeri ?? []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <?php ($p = trim((string)($g->path ?? ''))); ?>
+                        <?php if($p === '') continue; ?>
+                        <?php ($isExternal = \Illuminate\Support\Str::startsWith($p, ['http://','https://'])); ?>
+                        <div class="group relative overflow-hidden rounded-lg border bg-slate-100 transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer aspect-[4/3]">
+                                <?php ($src = $isExternal ? $p : asset('storage/'.$p)); ?>
+                                <img src="<?php echo e($src); ?>" alt="<?php echo e($g->title); ?>" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" onerror="this.onerror=null;this.src='<?php echo e(asset('storage/login/login reg page.webp')); ?>'">
+                                <div class="pointer-events-none absolute inset-0 bg-slate-900/0 transition-colors duration-200 group-hover:bg-slate-900/10"></div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <div class="text-slate-600"><?php echo e(__('landing.gallery_none')); ?></div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontak / Lokasi -->
+    <?php if (isset($component)) { $__componentOriginal647b175ed9e08e7e2da03809063e0558 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal647b175ed9e08e7e2da03809063e0558 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.contact-section','data' => ['id' => 'kontak']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('contact-section'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['id' => 'kontak']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal647b175ed9e08e7e2da03809063e0558)): ?>
+<?php $attributes = $__attributesOriginal647b175ed9e08e7e2da03809063e0558; ?>
+<?php unset($__attributesOriginal647b175ed9e08e7e2da03809063e0558); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal647b175ed9e08e7e2da03809063e0558)): ?>
+<?php $component = $__componentOriginal647b175ed9e08e7e2da03809063e0558; ?>
+<?php unset($__componentOriginal647b175ed9e08e7e2da03809063e0558); ?>
+<?php endif; ?>
+
+    
+    <script>
+    // Simple hero carousel without external deps
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('heroCarousel');
+      if (!root) return;
+      const slides = Array.from(root.querySelectorAll(':scope > [data-slide]'));
+      if (slides.length === 0) return;
+      const prevBtn = root.querySelector(':scope > button:nth-of-type(1)');
+      const nextBtn = root.querySelector(':scope > button:nth-of-type(2)');
+      const dots = Array.from(root.querySelectorAll('[data-idx]'));
+      let i = 0, timer = null, hover = false;
+      const setActive = (idx) => {
+        i = (idx + slides.length) % slides.length;
+        slides.forEach((el, k) => {
+          if (k === i) { el.classList.remove('opacity-0','pointer-events-none'); el.classList.add('opacity-100'); }
+          else { el.classList.add('opacity-0','pointer-events-none'); el.classList.remove('opacity-100'); }
+        });
+        dots.forEach((d,k)=> d.setAttribute('data-active', String(k===i)) );
+      };
+      const next = () => setActive(i + 1);
+      const prev = () => setActive(i - 1);
+      const start = () => { if (timer) clearInterval(timer); timer = setInterval(()=>{ if(!hover) next(); }, 5000); };
+      prevBtn && prevBtn.addEventListener('click', prev);
+      nextBtn && nextBtn.addEventListener('click', next);
+      dots.forEach(btn => btn.addEventListener('click', () => setActive(parseInt(btn.dataset.idx))));
+      root.addEventListener('mouseenter', ()=>{ hover = true; });
+      root.addEventListener('mouseleave', ()=>{ hover = false; });
+      setActive(0);
+      start();
+    });
+    </script>
+    <script>
+    // Lightweight Galeri Lightbox (no external libs)
+    document.addEventListener('DOMContentLoaded', () => {
+      const imgs = Array.from(document.querySelectorAll('#galeri img'));
+      if (imgs.length === 0) return;
+
+      const sources = imgs.map(img => img.getAttribute('src'));
+      let idx = 0;
+      let open = false;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[60] bg-black/90 opacity-0 pointer-events-none transition-opacity duration-200';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+
+      overlay.innerHTML = `
+        <div class="absolute inset-0 grid place-items-center p-4">
+          <img class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl" alt="<?php echo e(__('landing.gallery_alt')); ?>" />
+          <button type="button" aria-label="<?php echo e(__('landing.lightbox_close')); ?>" class="absolute top-4 right-4 rounded-full bg-white/90 hover:bg-white p-2 shadow">
+            <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.222 4.222a.75.75 0 011.06 0L10 8.94l4.718-4.718a.75.75 0 111.06 1.06L11.06 10l4.718 4.718a.75.75 0 11-1.06 1.06L10 11.06l-4.718 4.718a.75.75 0 11-1.06-1.06L8.94 10 4.222 5.282a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+          </button>
+          <button type="button" aria-label="<?php echo e(__('landing.lightbox_prev')); ?>" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
+            <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.78 4.22a.75.75 0 010 1.06L8.06 10l4.72 4.72a.75.75 0 11-1.06 1.06l-5.25-5.25a.75.75 0 010-1.06l5.25-5.25a.75.75 0 011.06 0z" clip-rule="evenodd"/></svg>
+          </button>
+          <button type="button" aria-label="<?php echo e(__('landing.lightbox_next')); ?>" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow hidden sm:inline-flex">
+            <svg class="h-5 w-5 text-slate-800" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.22 15.78a.75.75 0 010-1.06L11.94 10 7.22 5.28a.75.75 0 111.06-1.06l5.25 5.25a.75.75 0 010 1.06l-5.25 5.25a.75.75 0 01-1.06 0z" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      const imgEl = overlay.querySelector('img');
+      const buttons = overlay.querySelectorAll('button');
+      const btnClose = buttons[0];
+      const btnPrev = buttons[1];
+      const btnNext = buttons[2];
+
+      const setSrc = (i) => {
+        idx = (i + sources.length) % sources.length;
+        imgEl.src = sources[idx];
+      };
+
+      const show = (i) => {
+        open = true;
+        setSrc(i);
+        overlay.classList.remove('pointer-events-none','opacity-0');
+        overlay.classList.add('opacity-100');
+        document.documentElement.classList.add('overflow-hidden');
+      };
+      const hide = () => {
+        open = false;
+        overlay.classList.add('opacity-0');
+        overlay.classList.remove('opacity-100');
+        document.documentElement.classList.remove('overflow-hidden');
+        setTimeout(()=> overlay.classList.add('pointer-events-none'), 200);
+      };
+
+      imgs.forEach((im, i) => {
+        im.style.cursor = 'zoom-in';
+        im.addEventListener('click', () => show(i));
+      });
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hide();
+      });
+      btnClose.addEventListener('click', hide);
+      btnPrev.addEventListener('click', () => setSrc(idx - 1));
+      btnNext.addEventListener('click', () => setSrc(idx + 1));
+
+      window.addEventListener('keydown', (e) => {
+        if (!open) return;
+        if (e.key === 'Escape') hide();
+        else if (e.key === 'ArrowRight') setSrc(idx + 1);
+        else if (e.key === 'ArrowLeft') setSrc(idx - 1);
+      });
+    });
+    </script>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8c0e86a062c1c5bb6d0e151b7076f3fd)): ?>
+<?php $attributes = $__attributesOriginal8c0e86a062c1c5bb6d0e151b7076f3fd; ?>
+<?php unset($__attributesOriginal8c0e86a062c1c5bb6d0e151b7076f3fd); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8c0e86a062c1c5bb6d0e151b7076f3fd)): ?>
+<?php $component = $__componentOriginal8c0e86a062c1c5bb6d0e151b7076f3fd; ?>
+<?php unset($__componentOriginal8c0e86a062c1c5bb6d0e151b7076f3fd); ?>
+<?php endif; ?>
+<?php /**PATH C:\laragon\www\prima-pondok\resources\views/landing.blade.php ENDPATH**/ ?>

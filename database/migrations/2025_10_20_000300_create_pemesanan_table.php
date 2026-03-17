@@ -16,8 +16,12 @@ return new class extends Migration {
             $table->unsignedInteger('jumlah_hari')->default(1);
             $table->decimal('total_bayar', 12, 2)->default(0);
             $table->string('status')->default('pending');
+            $table->text('catatan_cancel')->nullable();
+            $table->boolean('is_extend')->default(false);
+            $table->unsignedBigInteger('extend_from_id')->nullable();
             $table->timestamps();
 
+            $table->foreign('extend_from_id')->references('id')->on('pemesanan')->nullOnDelete();
             $table->index(['kamar_id', 'tanggal_checkin', 'tanggal_checkout'], 'pemesanan_ketersediaan_idx');
         });
     }
