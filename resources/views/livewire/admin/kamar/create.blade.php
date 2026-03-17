@@ -4,7 +4,6 @@ use App\Models\Kamar;
 use App\Models\Fasilitas;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
-use App\Models\KamarFoto;
 use App\Support\ImageUploader;
 
 new class extends Component {
@@ -51,7 +50,7 @@ new class extends Component {
         }
 
         if (!empty($images)) {
-            $order = 0;
+            $paths = [];
             foreach ($images as $file) {
                 try {
                     $path = ImageUploader::storeCompressed($file, 'kamar', 2048, 1920, 1920);
@@ -60,13 +59,10 @@ new class extends Component {
                     $path = $path ? ltrim(str_replace('\\', '/', $path), '/') : null;
                 }
                 if ($path) {
-                    KamarFoto::create([
-                        'kamar_id' => $kamar->id,
-                        'path' => $path,
-                        'urutan' => $order++,
-                    ]);
+                    $paths[] = $path;
                 }
             }
+            $kamar->update(['fotos' => $paths]);
         }
         $this->redirectRoute('admin.kamar.index');
     }

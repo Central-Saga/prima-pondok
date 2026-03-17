@@ -12,4 +12,5 @@ return [
 
     // Default layout file for Livewire components
     'layout' => 'components.layouts.app',
+    'component_layout' => 'components.layouts.app',
 ];

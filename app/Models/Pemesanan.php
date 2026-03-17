@@ -242,14 +242,6 @@ class Pemesanan extends Model
             })
             ->exists();
 
-        if ($overlap) return false;
-
-        // Check maintenance overlap
-        $maintenanceOverlap = $this->kamar->maintenances()
-            ->where('tanggal_mulai', '<=', $extendEnd->toDateString())
-            ->where('tanggal_selesai', '>=', $extendStart->toDateString())
-            ->exists();
-
-        return !$maintenanceOverlap;
+        return !$overlap;
     }
 }

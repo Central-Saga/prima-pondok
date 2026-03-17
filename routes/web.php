@@ -10,7 +10,7 @@ use App\Models\Review;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
-    $kamar = Kamar::query()->with('fotos')->whereIn('status', ['available', 'maintenance'])->latest()->take(6)->get();
+    $kamar = Kamar::query()->whereIn('status', ['available', 'maintenance'])->latest()->take(6)->get();
     $hasMoreKamar = Kamar::query()->whereIn('status', ['available', 'maintenance'])->count() > 6;
     $galeri = Galeri::query()->where('status', 'active')->orderBy('urutan')->take(8)->get();
     $reviews = Review::query()

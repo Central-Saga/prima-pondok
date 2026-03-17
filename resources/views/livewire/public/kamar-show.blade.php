@@ -2,7 +2,6 @@
 
 use App\Models\Kamar;
 use App\Models\Pemesanan;
-use App\Models\KamarMaintenance;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Setting;
 use Livewire\Volt\Component;
@@ -20,7 +19,6 @@ new #[Layout('components.layouts.public')] class extends Component {
     public int $currentMonth;
     public int $currentYear;
     public array $bookedDates = [];
-    public array $maintenanceDates = [];
     public ?int $rescheduleId = null;
 
     private function statusMessage(): string
@@ -28,12 +26,15 @@ new #[Layout('components.layouts.public')] class extends Component {
         if ($this->kamar->isUnavailable()) {
             return __('rooms.error_room_unavailable');
         }
+        if ($this->kamar->isMaintenance()) {
+            return __('rooms.error_room_maintenance');
+        }
         return '';
     }
 
     public function mount(Kamar $kamar): void
     {
-        $this->kamar = $kamar->load(['fotos','fasilitas']);
+        $this->kamar = $kamar->load(['fasilitas']);
         $this->activeIndex = 0;
         $this->messageText = $this->statusMessage();
         $this->currentMonth = now()->month;
@@ -90,25 +91,6 @@ new #[Layout('components.layouts.public')] class extends Component {
                 $current->addDay();
             }
         }
-
-        // Load maintenance dates for this month
-        $maintenances = $this->kamar->maintenances()
-            ->where('tanggal_mulai', '<=', $endOfMonth)
-            ->where('tanggal_selesai', '>=', $startOfMonth)
-            ->get();
-
-        $this->maintenanceDates = [];
-        foreach ($maintenances as $mt) {
-            $mStart = \Carbon\Carbon::parse($mt->tanggal_mulai);
-            $mEnd = \Carbon\Carbon::parse($mt->tanggal_selesai);
-            $current = $mStart->copy();
-            while ($current->lte($mEnd)) {
-                if ($current->month === $this->currentMonth && $current->year === $this->currentYear) {
-                    $this->maintenanceDates[] = $current->day;
-                }
-                $current->addDay();
-            }
-        }
     }
 
     public function openCalendar(): void
@@ -150,7 +132,6 @@ new #[Layout('components.layouts.public')] class extends Component {
     public function selectDate(int $day): void
     {
         if (in_array($day, $this->bookedDates)) return;
-        if (in_array($day, $this->maintenanceDates)) return;
         $selectedDate = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day);
         if ($selectedDate->isPast() && !$selectedDate->isToday()) return;
 
@@ -205,21 +186,6 @@ new #[Layout('components.layouts.public')] class extends Component {
 
         if ($overlap) {
             $this->messageText = __('rooms.error_not_available');
-        }
-
-        // Check maintenance overlap
-        if (!$this->messageText) {
-            $maintenanceOverlap = $this->kamar->maintenances()
-                ->where('tanggal_mulai', '<=', $end->toDateString())
-                ->where('tanggal_selesai', '>=', $start->toDateString())
-                ->first();
-
-            if ($maintenanceOverlap) {
-                $info = $maintenanceOverlap->keterangan
-                    ? __('rooms.error_maintenance_dates') . ' — ' . $maintenanceOverlap->keterangan
-                    : __('rooms.error_maintenance_dates');
-                $this->messageText = $info;
-            }
         }
     }
 
@@ -281,7 +247,7 @@ new #[Layout('components.layouts.public')] class extends Component {
     }
 
     public function select(int $index): void {
-        $count = $this->kamar->fotos?->count() ?? 0;
+        $count = count($this->kamar->fotos ?? []);
         if ($count <= 0) return;
         if ($index < 0) { $this->activeIndex = max(0, $count - 1); return; }
         if ($index >= $count) { $this->activeIndex = 0; return; }
@@ -298,28 +264,18 @@ new #[Layout('components.layouts.public')] class extends Component {
         $startDay = $firstDay->dayOfWeek;
         
         $days = [];
-        
-        // Empty cells for days before month starts
         for ($i = 0; $i < $startDay; $i++) {
             $days[] = null;
         }
-        
-        // Calendar days
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $days[] = $day;
         }
-        
         return $days;
     }
 
     public function isDayBooked(int $day): bool
     {
         return in_array($day, $this->bookedDates);
-    }
-
-    public function isDayMaintenance(int $day): bool
-    {
-        return in_array($day, $this->maintenanceDates);
     }
 
     public function isDayPast(int $day): bool
@@ -342,7 +298,6 @@ new #[Layout('components.layouts.public')] class extends Component {
         }
 
         $booked = $this->isDayBooked($day);
-        $maintenance = $this->isDayMaintenance($day);
         $past = $this->isDayPast($day);
         $selected = $this->isDaySelected($day);
         $isCheckout = ($this->tanggal_checkout && \Carbon\Carbon::parse($this->tanggal_checkout)->format('Y-m-d') === \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day)->format('Y-m-d'));
@@ -355,12 +310,10 @@ new #[Layout('components.layouts.public')] class extends Component {
             $isInRange = $currentDate->isBetween($checkinDate, $checkoutDate) && !$currentDate->equalTo($checkoutDate);
         }
 
-        $disabled = $past || $booked || $maintenance;
+        $disabled = $past || $booked;
         
         $buttonClass = "p-2.5 rounded-lg text-sm font-semibold transition-all duration-200 min-h-[90px] flex flex-col items-center justify-center shadow-sm break-words ";
-        if ($maintenance && !$past) {
-            $buttonClass .= "bg-amber-50 text-amber-500 cursor-not-allowed border-2 border-amber-200";
-        } elseif ($past || $booked) {
+        if ($past || $booked) {
             $buttonClass .= "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
         } elseif ($selected || $isCheckout) {
             $buttonClass .= "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-md hover:shadow-lg transform hover:scale-105 border-2 border-emerald-400";
@@ -381,10 +334,7 @@ new #[Layout('components.layouts.public')] class extends Component {
         if ($showPrice) {
             $html .= '<div class="text-[10px] leading-tight ' . $priceColor . ' text-center">IDR<br>' . $price . '</div>';
         }
-        if ($maintenance && !$past) {
-            $mParts = explode('|', __('rooms.calendar_maintenance_label'));
-            $html .= '<div class="text-[10px] text-amber-500 mt-1 font-semibold leading-tight text-center">' . ($mParts[0] ?? '') . '<br>' . ($mParts[1] ?? '') . '</div>';
-        } elseif ($past || $booked) {
+        if ($past || $booked) {
             $naParts = explode('|', __('rooms.calendar_not_available_label'));
             $html .= '<div class="text-xs text-gray-400 mt-1 font-semibold">' . ($naParts[0] ?? '') . '<br>' . ($naParts[1] ?? '') . '</div>';
         }
@@ -399,10 +349,11 @@ new #[Layout('components.layouts.public')] class extends Component {
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-7">
                 <div class="relative aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden border bg-slate-100">
-                    @php($fotoCount = ($kamar->fotos ?? collect())->count())
+                    @php($fotos = $kamar->fotos ?? [])
+                    @php($fotoCount = count($fotos))
                     @if($fotoCount > 0)
-                        @php($main = $kamar->fotos[$activeIndex] ?? $kamar->fotos->first())
-                        <img src="{{ asset('storage/'.ltrim($main->path,'/')) }}" alt="{{ $kamar->nama_kamar }}" class="h-full w-full object-cover" />
+                        @php($main = $fotos[$activeIndex] ?? $fotos[0])
+                        <img src="{{ asset('storage/'.ltrim($main,'/')) }}" alt="{{ $kamar->nama_kamar }}" class="h-full w-full object-cover" />
                         @if($fotoCount > 1)
                             <button type="button" wire:click="prevImage" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow">&lsaquo;</button>
                             <button type="button" wire:click="nextImage" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white p-2 shadow">&rsaquo;</button>
@@ -412,12 +363,11 @@ new #[Layout('components.layouts.public')] class extends Component {
                     @endif
                 </div>
 
-                @php($hasPhotos = ($kamar->fotos ?? collect())->isNotEmpty())
-                @if($hasPhotos)
+                @if(!empty($kamar->fotos))
                     <div class="mt-3 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                        @foreach($kamar->fotos as $i => $f)
+                        @foreach($kamar->fotos as $i => $path)
                             <button type="button" wire:click="select({{ $i }})" class="aspect-[4/3] rounded-lg overflow-hidden border bg-slate-100 ring-2 transition {{ $activeIndex === $i ? 'ring-sky-400' : 'ring-transparent hover:ring-slate-300' }}">
-                                <img src="{{ asset('storage/'.ltrim($f->path,'/')) }}" alt="{{ __('rooms.no_photo') }} {{ $i+1 }}" class="h-full w-full object-cover" />
+                                <img src="{{ asset('storage/'.ltrim($path,'/')) }}" alt="{{ __('rooms.no_photo') }} {{ $i+1 }}" class="h-full w-full object-cover" />
                             </button>
                         @endforeach
                     </div>
@@ -432,11 +382,10 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <span class="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-200">Rp {{ number_format($kamar->harga,0,',','.') }} {{ __('rooms.price_badge_suffix') }}</span>
                     </div>
 
-                    @php($hasFasilitas = ($kamar->fasilitas ?? collect())->isNotEmpty())
-                    @php($colors = ['emerald','sky','amber','violet','rose','indigo'])
-                    @if($hasFasilitas)
+                    @if($kamar->fasilitas->isNotEmpty())
                         <div class="mt-4">
                             <h2 class="text-lg font-semibold text-slate-900">{{ __('rooms.facilities_title') }}</h2>
+                            @php($colors = ['emerald','sky','amber','violet','rose','indigo'])
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @foreach($kamar->fasilitas as $f)
                                     @php($c = $colors[$loop->index % count($colors)])
@@ -456,9 +405,9 @@ new #[Layout('components.layouts.public')] class extends Component {
             </div>
 
             <div class="lg:col-span-5">
-                @php($bookingDisabled = $kamar->isUnavailable())
-                @php($activeMaintenanceInfo = $kamar->getActiveMaintenanceInfo())
-                @php($upcomingMaintenances = $kamar->maintenances()->where('tanggal_selesai', '>=', now()->toDateString())->orderBy('tanggal_mulai')->get())
+                @php($isMaintenance = $kamar->isMaintenance())
+                @php($isUnavailable = $kamar->isUnavailable())
+                @php($bookingDisabled = $isMaintenance || $isUnavailable)
                 <div id="booking" class="mt-2 lg:mt-0 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm lg:sticky lg:top-24">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -473,39 +422,16 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <div class="flex items-start gap-3">
                             <svg class="h-5 w-5 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                            </svg>
+                                </svg>
                             <div class="flex-1">
-                                <h4 class="text-sm font-semibold text-amber-900">{{ __('rooms.status_unavailable_title') }}</h4>
-                                <p class="mt-1 text-sm text-amber-700">{{ $messageText }}</p>
-                                @if($activeMaintenanceInfo && $activeMaintenanceInfo->keterangan)
-                                    <p class="mt-1 text-sm text-amber-800 font-medium">{{ $activeMaintenanceInfo->keterangan }}</p>
-                                @endif
+                                <h4 class="text-sm font-semibold text-amber-900">{{ $isMaintenance ? __('rooms.status_maintenance_title') : __('rooms.status_unavailable_title') }}</h4>
+                                <p class="mt-1 text-sm text-amber-700">{{ $messageText ?: __('rooms.error_room_not_available') }}</p>
                                 <p class="mt-2 text-sm text-amber-600">{{ __('rooms.contact_admin_help') }}</p>
                             </div>
                         </div>
                     </div>
-                    @endif
-
-                    @if($upcomingMaintenances->isNotEmpty())
-                    <div class="mt-4 rounded-lg p-4 bg-amber-50/60 border border-amber-100">
-                        <div class="flex items-start gap-2 mb-2">
-                            <svg class="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.384-3.11A1.5 1.5 0 015 10.82V6.75a3.75 3.75 0 017.5 0v4.07a1.5 1.5 0 01-1.036 1.43l-5.384 3.11zM15.75 6.75v4.07" />
-                            </svg>
-                            <h4 class="text-sm font-semibold text-amber-800">{{ __('rooms.maintenance_schedule_title') }}</h4>
-                        </div>
-                        @foreach($upcomingMaintenances as $mt)
-                        <div class="flex items-start gap-2 text-sm {{ !$loop->first ? 'mt-2 pt-2 border-t border-amber-100' : '' }}">
-                            <span class="font-medium text-amber-700">{{ $mt->tanggal_mulai->format('d M Y') }} — {{ $mt->tanggal_selesai->format('d M Y') }}</span>
-                        </div>
-                        @if($mt->keterangan)
-                            <p class="text-sm text-amber-600 mt-0.5">{{ $mt->keterangan }}</p>
-                        @endif
-                        @endforeach
-                    </div>
-                    @endif
-
-                    <div>
+                    @else
+                    <div class="mt-4">
                         <button type="button" wire:click="openCalendar" class="w-full rounded-lg border-2 border-dashed border-sky-300 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-700 hover:bg-sky-100 transition-colors">
                             <svg class="inline-block h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -513,31 +439,27 @@ new #[Layout('components.layouts.public')] class extends Component {
                             {{ __('rooms.choose_date_calendar') }}
                         </button>
                     </div>
+                    @endif
 
                     <!-- Calendar Section (Non-Modal) -->
                     @if($showCalendar)
                     <div class="mt-6 p-6 border-2 border-sky-200 rounded-xl bg-gradient-to-br from-white to-sky-50 shadow-lg">
-                        <!-- Month Navigation -->
                         <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-sky-100">
                             <button type="button" wire:click="previousMonth" class="w-10 h-10 flex items-center justify-center rounded-full text-2xl font-bold text-sky-600 hover:bg-sky-100 hover:text-sky-700 transition-all duration-200 shadow-sm hover:shadow">‹</button>
                             <h3 class="text-xl font-bold text-slate-800">{{ ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][$currentMonth - 1] }} {{ $currentYear }}</h3>
                             <button type="button" wire:click="nextMonth" class="w-10 h-10 flex items-center justify-center rounded-full text-2xl font-bold text-sky-600 hover:bg-sky-100 hover:text-sky-700 transition-all duration-200 shadow-sm hover:shadow">›</button>
                         </div>
 
-                        <!-- Calendar Grid -->
                         <div class="grid grid-cols-7 gap-2 mb-6">
-                            <!-- Day Headers -->
                             @foreach(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $dayName)
                                 <div class="text-center font-bold text-slate-600 py-2 text-xs uppercase tracking-wide">{{ $dayName }}</div>
                             @endforeach
 
-                            <!-- Calendar Days -->
                             @foreach($this->getCalendarDays() as $day)
                                 {!! $this->renderDayCell($day) !!}
                             @endforeach
                         </div>
 
-                        <!-- Date Summary -->
                         @if($tanggal_checkin)
                             <div class="bg-gradient-to-r from-emerald-50 to-sky-50 p-5 rounded-xl border-2 border-emerald-200 mb-4 shadow-md">
                                 <div class="flex items-center gap-2 mb-3">
@@ -553,7 +475,6 @@ new #[Layout('components.layouts.public')] class extends Component {
                                         <p class="text-sm text-slate-700"><strong class="text-sky-700">{{ __('rooms.nights_label') }}:</strong> {{ $jumlah_hari }} {{ trans_choice('booking.nights', $jumlah_hari) }}</p>
                                         <p class="text-base font-bold text-slate-900 mt-1"><strong class="text-sky-700">{{ __('booking.total') }}:</strong> Rp {{ number_format($total_bayar, 0, ',', '.') }}</p>
                                     </div>
-                                    <!-- Action Buttons -->
                                     <div class="mt-4 pt-4 border-t border-emerald-200 flex gap-3">
                                         <button type="button" wire:click="pesan" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                                             <svg class="inline-block w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

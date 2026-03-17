@@ -12,8 +12,10 @@ return new class extends Migration {
             $table->string('nama_kamar');
             $table->string('tipe_kamar')->nullable();
             $table->decimal('harga', 12, 2)->default(0);
-            $table->text('fasilitas')->nullable();
+            $table->text('deskripsi')->nullable();
+            $table->text('deskripsi_en')->nullable();
             $table->string('status')->default('available');
+            $table->json('fotos')->nullable();
             $table->timestamps();
         });
     }
