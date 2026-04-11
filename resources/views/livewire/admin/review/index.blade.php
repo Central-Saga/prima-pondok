@@ -50,13 +50,19 @@ new class extends Component {
             <h1 class="text-2xl font-semibold text-slate-900">Review</h1>
             <p class="mt-1 text-slate-600 text-sm">Kelola review pelanggan dan tentukan yang tampil di landing page.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <input type="text" wire:model.live.debounce.1000ms="q" placeholder="Cari kamar/nama/komentar/#booking..." class="ui-input w-64" />
-            <select wire:model.live.debounce.1000ms="status" class="ui-select w-40">
+        <div class="flex flex-wrap items-center gap-3">
+            <input type="text" wire:model.live.debounce.1000ms="q" placeholder="Cari kamar/nama/komentar..." class="ui-input w-48 sm:w-64" />
+            <select wire:model.live.debounce.1000ms="status" class="ui-select w-32 sm:w-40">
                 <option value="all">Semua</option>
                 <option value="published">Tampil</option>
                 <option value="hidden">Tersembunyi</option>
             </select>
+            <a href="{{ route('admin.review.create') }}" class="inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-sky-500 shadow-sm transition-colors">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Tambah Review
+            </a>
         </div>
     </div>
 

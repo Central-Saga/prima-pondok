@@ -18,10 +18,9 @@ return new class extends Migration {
             $table->string('status')->default('pending');
             $table->text('catatan_cancel')->nullable();
             $table->boolean('is_extend')->default(false);
-            $table->unsignedBigInteger('extend_from_id')->nullable();
+            $table->foreignId('extend_from_id')->nullable()->constrained('pemesanan')->nullOnDelete();
             $table->timestamps();
 
-            $table->foreign('extend_from_id')->references('id')->on('pemesanan')->nullOnDelete();
             $table->index(['kamar_id', 'tanggal_checkin', 'tanggal_checkout'], 'pemesanan_ketersediaan_idx');
         });
     }

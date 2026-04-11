@@ -4,7 +4,6 @@ use App\Models\Kamar;
 use App\Models\Pemesanan;
 use App\Models\Pembayaran;
 use App\Models\Bank;
-use App\Models\KamarMaintenance;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
@@ -22,7 +21,6 @@ new #[Layout('components.layouts.public')] class extends Component {
     public int $currentMonth;
     public int $currentYear;
     public array $bookedDates = [];
-    public array $maintenanceDates = [];
 
     public ?string $metode_bayar = 'transfer';
     public ?float $jumlah = null;
@@ -38,7 +36,7 @@ new #[Layout('components.layouts.public')] class extends Component {
         abort_if(!$wisatawanId || $pemesanan->wisatawan_id !== $wisatawanId, 403);
         abort_if(!in_array($pemesanan->status, [Pemesanan::STATUS_CONFIRMED, Pemesanan::STATUS_EXTEND]), 403);
 
-        // Block access if room is not available for extend (next day has booking/maintenance)
+        // Block access if room is not available for extend (next day has booking)
         if (!$pemesanan->canExtend(1)) {
             session()->flash('extend_blocked', __('booking.extend_blocked_message'));
             $this->redirect(route('booking.show', $pemesanan->id));
@@ -80,25 +78,6 @@ new #[Layout('components.layouts.public')] class extends Component {
                 $current->addDay();
             }
         }
-
-        // Load maintenance dates
-        $maintenances = $this->pemesanan->kamar->maintenances()
-            ->where('tanggal_mulai', '<=', $endOfMonth)
-            ->where('tanggal_selesai', '>=', $startOfMonth)
-            ->get();
-
-        $this->maintenanceDates = [];
-        foreach ($maintenances as $mt) {
-            $mStart = \Carbon\Carbon::parse($mt->tanggal_mulai);
-            $mEnd = \Carbon\Carbon::parse($mt->tanggal_selesai);
-            $current = $mStart->copy();
-            while ($current->lte($mEnd)) {
-                if ($current->month === $this->currentMonth && $current->year === $this->currentYear) {
-                    $this->maintenanceDates[] = $current->day;
-                }
-                $current->addDay();
-            }
-        }
     }
 
     public function openCalendar(): void
@@ -134,10 +113,6 @@ new #[Layout('components.layouts.public')] class extends Component {
             $this->messageText = __('booking.extend_room_unavailable');
             return;
         }
-        if (in_array($day, $this->maintenanceDates)) {
-            $this->messageText = __('booking.extend_room_maintenance');
-            return;
-        }
 
         $selectedDate = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day);
         $extendStart = $this->pemesanan->tanggal_checkout->copy();
@@ -165,16 +140,6 @@ new #[Layout('components.layouts.public')] class extends Component {
 
             if ($isBooked) {
                 $this->messageText = __('booking.extend_booking_conflict', ['date' => $checkDate->format('d M Y')]);
-                return;
-            }
-
-            $isMaintenance = $this->pemesanan->kamar->maintenances()
-                ->where('tanggal_mulai', '<=', $checkDate->toDateString())
-                ->where('tanggal_selesai', '>=', $checkDate->toDateString())
-                ->exists();
-
-            if ($isMaintenance) {
-                $this->messageText = __('booking.extend_maintenance_conflict', ['date' => $checkDate->format('d M Y')]);
                 return;
             }
 
@@ -281,7 +246,6 @@ new #[Layout('components.layouts.public')] class extends Component {
         }
 
         $booked = in_array($day, $this->bookedDates);
-        $maintenance = in_array($day, $this->maintenanceDates);
         $selectedDate = \Carbon\Carbon::create($this->currentYear, $this->currentMonth, $day);
 
         $extendStart = $this->pemesanan->tanggal_checkout->copy()->startOfDay();
@@ -297,13 +261,11 @@ new #[Layout('components.layouts.public')] class extends Component {
             $isInRange = $selectedDate->gt($extendStart) && $selectedDate->lt($newCheckout);
         }
 
-        $disabled = $isPast || $booked || $maintenance || $isCurrentCheckout;
+        $disabled = $isPast || $booked || $isCurrentCheckout;
 
         $buttonClass = "p-2.5 rounded-lg text-sm font-semibold transition-all duration-200 min-h-[80px] flex flex-col items-center justify-center shadow-sm break-words ";
         if ($isCurrentCheckout) {
             $buttonClass .= "bg-sky-100 text-sky-700 cursor-not-allowed border-2 border-sky-300";
-        } elseif ($maintenance && !$isPast) {
-            $buttonClass .= "bg-amber-50 text-amber-500 cursor-not-allowed border-2 border-amber-200";
         } elseif ($isPast || $booked) {
             $buttonClass .= "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200";
         } elseif ($isSelected) {
@@ -329,12 +291,10 @@ new #[Layout('components.layouts.public')] class extends Component {
         } elseif ($showPrice) {
             $html .= '<div class="text-[10px] leading-tight ' . $priceColor . ' text-center">IDR<br>' . $price . '</div>';
         }
-        if ($maintenance && !$isPast && !$isCurrentCheckout) {
-            $mParts = explode('|', __('booking.extend_calendar_maintenance_label'));
-            $html .= '<div class="text-[10px] text-amber-500 mt-1 font-semibold leading-tight text-center">' . ($mParts[0] ?? '') . '<br>' . ($mParts[1] ?? '') . '</div>';
-        } elseif (($booked) && !$isCurrentCheckout) {
+
+        if (($booked) && !$isCurrentCheckout) {
             $naParts = explode('|', __('booking.extend_calendar_not_available_label'));
-            $html .= '<div class="text-xs text-gray-400 mt-1 font-semibold">' . ($naParts[0] ?? '') . '<br>' . ($naParts[1] ?? '') . '</div>';
+            $html .= '<div class="text-xs text-gray-400 mt-1 font-semibold text-center">' . ($naParts[0] ?? '') . '<br>' . ($naParts[1] ?? '') . '</div>';
         }
         $html .= '</button>';
 
@@ -412,7 +372,6 @@ new #[Layout('components.layouts.public')] class extends Component {
                         <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-violet-500 border-2 border-violet-400"></div> {{ __('booking.extend_legend_extend_checkout') }}</div>
                         <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-violet-50 border-2 border-violet-200"></div> {{ __('booking.extend_legend_extend_period') }}</div>
                         <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-gray-100 border border-gray-200"></div> {{ __('booking.extend_legend_unavailable') }}</div>
-                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-amber-50 border-2 border-amber-200"></div> {{ __('booking.extend_legend_maintenance') }}</div>
                     </div>
 
                     @if($messageText)

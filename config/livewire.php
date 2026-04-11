@@ -9,5 +9,8 @@ return [
         // Increase default limit to 25MB per file
         'rules' => 'image|max:25600', // size in KB
     ],
-];
 
+    // Default layout file for Livewire components
+    'layout' => 'components.layouts.app',
+    'component_layout' => 'components.layouts.app',
+];

@@ -14,10 +14,18 @@ return new class extends Migration
             $table->string('nama_en', 150)->nullable();
             $table->timestamps();
         });
+
+        Schema::create('fasilitas_kamar', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('fasilitas_id')->constrained('fasilitas')->cascadeOnDelete();
+            $table->foreignId('kamar_id')->constrained('kamar')->cascadeOnDelete();
+            $table->unique(['fasilitas_id', 'kamar_id']);
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('fasilitas_kamar');
         Schema::dropIfExists('fasilitas');
     }
 };

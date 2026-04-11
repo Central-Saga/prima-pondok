@@ -15,7 +15,6 @@ new #[Layout('components.layouts.public')] class extends Component {
     public function getItemsProperty()
     {
         return Kamar::query()
-            ->with('fotos')
             ->whereIn('status', ['available', 'maintenance', 'unavailable'])
             ->when($this->q !== '', function ($q) {
                 $term = '%'.$this->q.'%';
@@ -48,9 +47,9 @@ new #[Layout('components.layouts.public')] class extends Component {
         <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($this->items as $item)
                 <div class="rounded-xl border border-sky-100 bg-white shadow-sm overflow-hidden transform-gpu transition duration-300 ease-out hover:scale-[1.02] hover:shadow-md hover:border-sky-200">
-                    @if(($item->fotos ?? collect())->isNotEmpty())
+                    @if(!empty($item->fotos))
                         <div class="h-44 bg-slate-100">
-                            <img src="{{ asset('storage/'.$item->fotos->first()->path) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
+                            <img src="{{ asset('storage/'.ltrim($item->fotos[0], '/')) }}" alt="{{ $item->nama_kamar }}" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='{{ asset('storage/login/login reg page.webp') }}'">
                         </div>
                     @else
                         <div class="h-44 bg-slate-100 flex items-center justify-center text-slate-400">{{ __('rooms.no_photo') }}</div>

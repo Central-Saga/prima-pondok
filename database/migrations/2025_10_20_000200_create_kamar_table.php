@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->text('deskripsi')->nullable();
             $table->text('deskripsi_en')->nullable();
             $table->string('status')->default('available');
+            $table->json('fotos')->nullable();
             $table->timestamps();
         });
     }

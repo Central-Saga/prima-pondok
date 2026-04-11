@@ -18,10 +18,12 @@ class Kamar extends Model
         'deskripsi',
         'deskripsi_en',
         'status',
+        'fotos',
     ];
 
     protected $casts = [
         'harga' => 'decimal:2',
+        'fotos' => 'array',
     ];
 
     /**
@@ -32,12 +34,11 @@ class Kamar extends Model
     public const STATUS_UNAVAILABLE = 'unavailable';
 
     /**
-     * Cek apakah kamar bisa dipesan (available atau maintenance dengan jadwal per tanggal)
+     * Cek apakah kamar bisa dipesan
      */
     public function isBookable(): bool
     {
-        $status = strtolower((string) $this->status);
-        return in_array($status, [self::STATUS_AVAILABLE, self::STATUS_MAINTENANCE]);
+        return strtolower((string) $this->status) === self::STATUS_AVAILABLE;
     }
 
     /**
@@ -49,14 +50,10 @@ class Kamar extends Model
     }
 
     /**
-     * Status tampilan: jika status=maintenance tapi hari ini BUKAN di dalam jadwal maintenance,
-     * tampilkan sebagai "available". Maintenance badge hanya muncul saat hari ini masuk jadwal.
+     * Status tampilan
      */
     public function getDisplayStatus(): string
     {
-        if ($this->isMaintenance()) {
-            return $this->hasActiveMaintenance() ? self::STATUS_MAINTENANCE : self::STATUS_AVAILABLE;
-        }
         return $this->status;
     }
 
@@ -84,40 +81,8 @@ class Kamar extends Model
         return $this->hasMany(Pemesanan::class);
     }
 
-    public function fotos()
-    {
-        return $this->hasMany(KamarFoto::class)->orderBy('urutan')->orderBy('id');
-    }
-
     public function fasilitas()
     {
         return $this->belongsToMany(Fasilitas::class, 'fasilitas_kamar', 'kamar_id', 'fasilitas_id');
-    }
-
-    public function maintenances()
-    {
-        return $this->hasMany(KamarMaintenance::class);
-    }
-
-    /**
-     * Cek apakah kamar punya jadwal maintenance aktif saat ini
-     */
-    public function hasActiveMaintenance(): bool
-    {
-        return $this->maintenances()
-            ->where('tanggal_mulai', '<=', now()->toDateString())
-            ->where('tanggal_selesai', '>=', now()->toDateString())
-            ->exists();
-    }
-
-    /**
-     * Ambil maintenance yang aktif hari ini (untuk info message)
-     */
-    public function getActiveMaintenanceInfo(): ?KamarMaintenance
-    {
-        return $this->maintenances()
-            ->where('tanggal_mulai', '<=', now()->toDateString())
-            ->where('tanggal_selesai', '>=', now()->toDateString())
-            ->first();
     }
 }
