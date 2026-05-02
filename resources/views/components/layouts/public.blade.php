@@ -4,9 +4,23 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}</title>
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}">
+        <meta property="og:image" content="{{ asset('images/ogimagepondokteges.png') }}">
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="{{ url()->current() }}">
+        <meta property="twitter:title" content="{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}">
+        <meta property="twitter:image" content="{{ asset('images/ogimagepondokteges.png') }}">
+
         @vite('resources/css/app.css')
         @vite('resources/js/app.js')
     </head>
+
     <body class="min-h-screen bg-white text-slate-800">
         @include('partials.site-header')
 
