@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}</title>
+        <meta name="description" content="Pondok Teges - Penginapan nyaman, asri, dan strategis.">
+
 
         <!-- Open Graph / Facebook / Instagram / WhatsApp -->
         <meta property="og:type" content="website">
