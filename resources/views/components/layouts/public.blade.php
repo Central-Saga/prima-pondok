@@ -9,13 +9,13 @@
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
         <meta property="og:title" content="{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}">
-        <meta property="og:image" content="{{ asset('images/ogimagepondokteges.png') }}">
+        <meta property="og:image" content="{{ asset('images/ogimage.png') }}">
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image">
         <meta property="twitter:url" content="{{ url()->current() }}">
         <meta property="twitter:title" content="{{ \App\Models\Setting::get('site_name', 'Pondok Teges') }}">
-        <meta property="twitter:image" content="{{ asset('images/ogimagepondokteges.png') }}">
+        <meta property="twitter:image" content="{{ asset('images/ogimage.png') }}">
 
         @vite('resources/css/app.css')
         @vite('resources/js/app.js')
